@@ -4,33 +4,39 @@ using System.Collections.Generic;
 public class ListenerNotifier
 {
     private string m_Tag;
-    private List<IListenerInterface> m_Listeners;
+    private List<Listener> m_Listeners;
 
     public ListenerNotifier (string tag)
     {
         m_Tag = tag;
-        m_Listeners = new List<IListenerInterface> ();
+        m_Listeners = new List<Listener> ();
     }
 
-    public void Notify (Event e)
+    public void Notify (GameEvent e)
     {
-        Debug.Assert (e.GetTag () == m_Tag, "Event has tag " + e.GetTag () + " but notifier has tag " + m_Tag);
-        foreach (IListenerInterface listener in m_Listeners)
+        Debug.Assert (e.GetTag () == m_Tag, "GameEvent has tag " + e.GetTag () + " but notifier has tag " + m_Tag);
+        foreach (Listener listener in m_Listeners)
         {
-            if (listener.IsEventHandled (e))
+            if (listener.IsGameEventHandled (e))
             {
-                ReflectionHelper.CallMethod ("OnEvent", listener, e);
+                ReflectionHelper.CallMethod ("OnGameEvent", listener.GetObjectToNotify(), e);
             }
         }
     }
 
-    public void AddListener (IListenerInterface listener)
+    public void AddListener (System.Object objectToNotify, string tag, params System.Type[] GameEventTypes)
     {
-        m_Listeners.Add (listener);
+        m_Listeners.Add (new Listener(objectToNotify, tag, GameEventTypes));
     }
 
-    public void RemoveListener (IListenerInterface listener)
+    public void RemoveListener (System.Object objectToNotify, string tag)
     {
-        m_Listeners.Remove (listener);
+        int indexToRemove = m_Listeners.FindIndex (
+            delegate(Listener listener)
+            {
+                return listener.GetTag () == tag && listener.GetObjectToNotify () == objectToNotify;
+            }
+        );
+        m_Listeners.RemoveAt (indexToRemove);
     }
 }

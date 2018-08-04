@@ -108,3 +108,7 @@ public class DialogueManager : MonoBehaviour
     }
 }
 
+public class DialogueManagerProxy : UniqueProxy<DialogueManager>
+{
+}
+

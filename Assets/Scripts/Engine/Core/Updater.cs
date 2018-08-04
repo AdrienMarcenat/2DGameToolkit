@@ -8,6 +8,7 @@ public enum EUpdatePass
 {
     First,
     BeforeAI,
+    AI,
     AfterAI,
     Last,
     // Do not move count !!!
@@ -17,6 +18,7 @@ public enum EUpdatePass
 public class Updater
 {
     List<AnyObject>[] m_ObjectListPerPass;
+    private bool m_UpdateGuard = false;
 
     public Updater ()
     {
@@ -28,18 +30,19 @@ public class Updater
         UpdaterProxy.Open (this);
     }
 
-    private void OnDestroy ()
+    ~Updater ()
     {
         UpdaterProxy.Close ();
     }
 
     public void Update ()
     {
-        if (m_IsPaused)
+        /*if (m_IsPaused)
         {
             return;
-        }
+        }*/
 
+        m_UpdateGuard = true;
         for (int i = 0; i < (int)EUpdatePass.Count; i++)
         {
             EUpdatePass pass = (EUpdatePass)i;
@@ -48,10 +51,12 @@ public class Updater
                 ReflectionHelper.CallMethod ("Update" + pass.ToString (), objectToUpdate);
             }
         }
+        m_UpdateGuard = false;
     }
 
     public void Register (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
     {
+        Debug.Assert (!m_UpdateGuard, "Cannot register a listener while updating !");
         foreach (EUpdatePass pass in updatePassList)
         {
             Debug.Assert (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
@@ -64,6 +69,7 @@ public class Updater
 
     public void Unregister (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
     {
+        Debug.Assert (!m_UpdateGuard, "Cannot unregister a listener while updating !");
         foreach (EUpdatePass pass in updatePassList)
         {
             Debug.Assert (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());

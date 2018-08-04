@@ -1,30 +1,21 @@
 ﻿using UnityEngine;
 
-public interface IListenerInterface
+public class Listener
 {
-    string GetTag ();
-    bool IsEventHandled (Event e);
-}
-
-public class Listener : IListenerInterface
-{
+    private System.Object m_ObjectToNotify;
     private string m_Tag;
-    private System.Type[] m_EventTypes;
+    private System.Type[] m_GameEventTypes;
 
-    public Listener (string tag, params System.Type[] eventTypes)
+    public Listener (System.Object objectToNotify, string tag, params System.Type[] GameEventTypes)
     {
+        m_ObjectToNotify = objectToNotify;
         m_Tag = tag;
-        m_EventTypes = eventTypes;
+        m_GameEventTypes = GameEventTypes;
     }
 
-    protected void RegisterAsListener ()
+    public System.Object GetObjectToNotify ()
     {
-        EventManagerProxy.Get ().Register (this);
-    }
-
-    protected void UnregisterAsListener ()
-    {
-        EventManagerProxy.Get ().Unregister (this);
+        return m_ObjectToNotify;
     }
 
     public string GetTag ()
@@ -32,46 +23,16 @@ public class Listener : IListenerInterface
         return m_Tag;
     }
 
-    public bool IsEventHandled (Event e)
+    public bool IsGameEventHandled (GameEvent e)
     {
-        System.Type eventType = e.GetType ();
-        foreach (System.Type type in m_EventTypes)
+        System.Type GameEventType = e.GetType ();
+        foreach (System.Type type in m_GameEventTypes)
         {
-            if (type == eventType)
+            if (type == GameEventType)
             {
                 return true;
             }
         }
         return false;
-    }
-}
-
-public class MonoBehaviourListener : MonoBehaviour, IListenerInterface
-{
-    private Listener m_Listener;
-
-    protected void CreateListener(string tag, params System.Type[] eventTypes)
-    {
-        m_Listener = new Listener (tag, eventTypes);
-    }
-
-    protected void RegisterAsListener ()
-    {
-        EventManagerProxy.Get ().Register (this);
-    }
-
-    protected void UnregisterAsListener ()
-    {
-        EventManagerProxy.Get ().Unregister (this);
-    }
-
-    public string GetTag ()
-    {
-        return m_Listener.GetTag ();
-    }
-
-    public bool IsEventHandled (Event e)
-    {
-        return m_Listener.IsEventHandled (e);
     }
 }

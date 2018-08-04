@@ -1,38 +1,60 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class HSMState : MonoBehaviour
-{
-    protected HSM m_HSM;
-    protected int m_ID;
+using StateID = System.Type;
 
-    protected virtual void Awake ()
+public struct HSMTransition
+{
+    public enum EType
     {
-        m_HSM = GetComponent<HSM> ();
+        Child,
+        Siblings,
+        Exit,
+        Clear,
+        None
+    };
+
+    public EType m_Type;
+    public StateID m_SourceID;
+    public StateID m_DestinationID;
+
+    public HSMTransition (EType type = EType.None, StateID sourceID = null, StateID destinationID = null)
+    {
+        m_Type = type;
+        m_SourceID = sourceID;
+        m_DestinationID = destinationID;
+    }
+}
+
+public abstract class HSMState
+{
+    private HSMTransition m_NextTransition;
+    private StateID m_ID;
+
+    public HSMState()
+    {
+        m_ID = this.GetType ();
     }
 
-    protected virtual void Start ()
+    public StateID GetID ()
     {
-        m_HSM.RegisterState (m_ID, this);
+        return m_ID;
     }
 
     public virtual void OnEnter () { }
     public virtual bool OnUpdate () { return false; }
     public virtual void OnExit () { }
 
-    protected void RequestStackPush (int stateID)
+    public HSMTransition EvalTransition ()
     {
-        m_HSM.PushState (stateID);
+        HSMTransition res = m_NextTransition;
+        m_NextTransition = new HSMTransition ();
+        return res;
     }
 
-    protected void RequestStackPop ()
+    protected void ChangeNextTransition (HSMTransition.EType type, StateID destinationID = null)
     {
-        m_HSM.PopState ();
-    }
-
-    protected void RequestStateClear ()
-    {
-        m_HSM.ClearStates ();
+        m_NextTransition = new HSMTransition (type, m_ID, destinationID);
     }
 }
 

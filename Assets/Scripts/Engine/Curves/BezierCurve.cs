@@ -26,11 +26,11 @@ public static class Bezier
 
 public class BezierCurve : MonoBehaviour
 {
-    public Vector2[] points;
+    public Vector2[] m_Points;
 
     public void Reset ()
     {
-        points = new Vector2[] {
+        m_Points = new Vector2[] {
             new Vector2 (1f, 0f),
             new Vector2 (2f, 0f),
             new Vector2 (3f, 0f),
@@ -40,12 +40,12 @@ public class BezierCurve : MonoBehaviour
 
     public Vector2 GetPoint (float t)
     {
-        return transform.TransformPoint (Bezier.GetPoint (points[0], points[1], points[2], points[3], t));
+        return transform.TransformPoint (Bezier.GetPoint (m_Points[0], m_Points[1], m_Points[2], m_Points[3], t));
     }
 
     public Vector2 GetVelocity (float t)
     {
-        return transform.TransformPoint (Bezier.GetFirstDerivative (points[0], points[1], points[2], points[3], t)) -
+        return transform.TransformPoint (Bezier.GetFirstDerivative (m_Points[0], m_Points[1], m_Points[2], m_Points[3], t)) -
         transform.position;
     }
 

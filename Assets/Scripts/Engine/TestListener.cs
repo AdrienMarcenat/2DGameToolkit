@@ -1,21 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TestListener : MonoBehaviourListener
+public class TestListener : MonoBehaviour
 {
     void Start ()
     {
-        CreateListener ("Player", typeof(PlayerEvent), typeof(PlayerHealthEvent));
-        RegisterAsListener ();
+        GameEventManagerProxy.Get().Register (this, "Player", typeof(PlayerInputGameEvent));
     }
 
-    public void OnEvent(PlayerEvent playerEvent)
+    public void OnGameEvent (PlayerInputGameEvent inputGameEvent)
     {
-        Debug.Log (playerEvent.GetMessage ());
-    }
-
-    public void OnEvent (PlayerHealthEvent playerHealthEvent)
-    {
-        Debug.Log (playerHealthEvent.GetMessage ());
+        Debug.Log (inputGameEvent.GetInput ());
     }
 }

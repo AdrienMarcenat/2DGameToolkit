@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 [System.Serializable]
 public class Dialogue
@@ -12,8 +10,8 @@ public class Dialogue
 
         public Sentence (string name, string sentence)
         {
-            this.m_Name = name;
-            this.m_Sentence = sentence;
+            m_Name = name;
+            m_Sentence = sentence;
         }
     }
 

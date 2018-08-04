@@ -4,7 +4,10 @@ using System.Collections;
 public class World : MonoBehaviour
 {
     private Updater m_Updater;
-    private EventManager m_EventManager;
+    private GameEventManager m_GameEventManager;
+    private InputManager m_InputManager;
+
+    private GameFlowHSM m_GameFlowHSM;
 
     // This should be called before any other gameobject awake
     private void Awake ()
@@ -12,7 +15,10 @@ public class World : MonoBehaviour
         DontDestroyOnLoad (gameObject);
         // Keep the Updater first, as the other members might want to register to it
         m_Updater = new Updater ();
-        m_EventManager = new EventManager ();
+        m_GameEventManager = new GameEventManager ();
+        m_InputManager = new InputManager ();
+
+        m_GameFlowHSM = new GameFlowHSM ();
     }
 
     void Update ()

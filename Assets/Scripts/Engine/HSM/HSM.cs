@@ -2,103 +2,161 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class HSM : MonoBehaviour
+using StateID = System.Type;
+
+public class HSM
 {
-    public enum Action
-    {
-        Push,
-        Pop,
-        Clear,
-    };
+    private Stack<HSMState> m_StateStack;
+    private Queue<HSMTransition> m_TransitionQueue;
+    private Dictionary<StateID, HSMState> m_StateFactory;
+    private bool m_IsStackChanged;
 
-    private struct PendingChange
+    public HSM (params HSMState[] states)
     {
-        public Action action;
-        public int stateID;
+        m_StateStack = new Stack<HSMState> ();
+        m_TransitionQueue = new Queue<HSMTransition> ();
+        m_StateFactory = new Dictionary<StateID, HSMState> ();
+        m_IsStackChanged = false;
 
-        public PendingChange (Action a, int ID = 0)
+        foreach(HSMState state in states)
         {
-            action = a;
-            stateID = ID;
+            m_StateFactory.Add (state.GetType (), state);
         }
-    };
-
-    private Stack<HSMState> stateStack;
-    private List<PendingChange> pendingList;
-    private Hashtable factories;
-
-
-    protected virtual void Awake ()
-    {
-        stateStack = new Stack<HSMState> ();
-        pendingList = new List<PendingChange> ();
-        factories = new Hashtable ();
     }
 
-    public void RegisterState (int stateID, HSMState state)
+    public void Start (StateID firstStateID)
     {
-        factories.Add (stateID, state);
+        PushState (firstStateID);
+        UpdaterProxy.Get ().Register (this, EUpdatePass.Last);
+        DumpStack ();
     }
 
-    public void Update ()
+    public void Stop (StateID firstStateID)
     {
-        foreach (HSMState state in stateStack)
+        DumpStack ();
+        UpdaterProxy.Get ().Unregister (this, EUpdatePass.Last);
+        ClearStack ();
+        m_TransitionQueue.Clear ();
+    }
+
+    public void UpdateLast ()
+    {
+        m_IsStackChanged = false;
+        foreach (HSMState state in m_StateStack)
         {
-            if (state.OnUpdate ())
-                break;
+            m_TransitionQueue.Enqueue (state.EvalTransition ());
         }
-        ApplyPendingChanges ();
-    }
-
-
-    public void PushState (int stateID)
-    {
-        pendingList.Add (new PendingChange (Action.Push, stateID));
-    }
-
-    public void PopState ()
-    {
-        if (IsEmpty ())
-            return;
-        pendingList.Add (new PendingChange (Action.Pop));
-    }
-
-    public void ClearStates ()
-    {
-        pendingList.Add (new PendingChange (Action.Clear));
+        ApplyHSMTransitions ();
+        if (m_IsStackChanged)
+        {
+            DumpStack ();
+        }
     }
 
     public bool IsEmpty ()
     {
-        return stateStack.Count == 0;
+        return m_StateStack.Count == 0;
     }
 
-    private HSMState FindState (int stateID)
+    private HSMState FindState (StateID stateID)
     {
-        return (HSMState)factories[stateID];
-    }
-
-    private void ApplyPendingChanges ()
-    {
-        foreach (PendingChange change in pendingList.ToArray ())
+        HSMState state = null;
+        if (!m_StateFactory.TryGetValue (stateID, out state))
         {
-            switch (change.action)
+            Debug.Assert (false, "cannot find state with ID " + stateID);
+        }
+        return state;
+    }
+
+    private void ApplyHSMTransitions ()
+    {
+        while (m_TransitionQueue.Count != 0)
+        {
+            HSMTransition transition = m_TransitionQueue.Dequeue ();
+            switch (transition.m_Type)
             {
-                case Action.Push:
-                    HSMState pushState = FindState (change.stateID);
-                    pushState.OnEnter ();
-                    stateStack.Push (pushState);
+                case HSMTransition.EType.Clear:
+                    // Don't apply other transition as we completly change the stack
+                    m_TransitionQueue.Clear ();
+                    ClearStack ();
+                    PushState (transition.m_DestinationID);
                     break;
-                case Action.Pop:
-                    HSMState popState = stateStack.Pop ();
-                    popState.OnExit ();
+                case HSMTransition.EType.Siblings:
+                    ReplaceState(transition.m_SourceID, transition.m_DestinationID);
                     break;
-                case Action.Clear:
-                    stateStack.Clear ();
+                case HSMTransition.EType.Child:
+                    HSMState peekState = m_StateStack.Peek ();
+                    if (peekState.GetID () == transition.m_SourceID)
+                    {
+                        PushState (transition.m_DestinationID);
+                    }
+                    break;
+                case HSMTransition.EType.Exit:
+                    ReplaceState (transition.m_SourceID, null);
+                    break;
+                case HSMTransition.EType.None:
+                    break;
+                default:
+                    Debug.Assert (false, "Invalid transition type");
                     break;
             }
         }
-        pendingList.Clear ();
+    }
+
+    private void PushState (StateID stateID)
+    {
+        if (stateID != null)
+        {
+            HSMState newState = FindState (stateID);
+            Debug.Assert (newState != null, "Cannot find state with ID " + stateID);
+            newState.OnEnter ();
+            m_StateStack.Push (newState);
+            m_IsStackChanged = true;
+        }
+    }
+
+    private void ReplaceState (StateID oldStateID, StateID newStateiD)
+    {
+        List<HSMState> topStates = new List<HSMState> ();
+        for (int i = 0; i < m_StateStack.Count; i++)
+        {
+            // Save all the states above
+            if (m_StateStack.Peek ().GetID () != oldStateID)
+            {
+                topStates.Add (m_StateStack.Pop ());
+            }
+            else
+            {
+                m_StateStack.Pop ().OnExit ();
+                m_IsStackChanged = true;
+                break;
+            }
+        }
+        PushState (newStateiD);
+        // Re push all the states above
+        for (int i = topStates.Count - 1; i >= 0; i--)
+        {
+            m_StateStack.Push (topStates[i]);
+        }
+    }
+
+    private void ClearStack ()
+    {
+        while (m_StateStack.Count != 0)
+        {
+            m_StateStack.Pop ().OnExit ();
+        }
+        m_IsStackChanged = true;
+    }
+
+    private void DumpStack ()
+    {
+        Debug.Log ("=======================> Dump state stack begin");
+        foreach (HSMState state in m_StateStack)
+        {
+            Debug.Log (state.GetType ());
+        }
+        Debug.Log ("<======================= Dump state stack end");
     }
 }
 
