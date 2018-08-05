@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 using StateID = System.Type;
+using NUnit.Framework;
 
 public class HSM
 {
@@ -18,7 +18,7 @@ public class HSM
         m_StateFactory = new Dictionary<StateID, HSMState> ();
         m_IsStackChanged = false;
 
-        foreach(HSMState state in states)
+        foreach (HSMState state in states)
         {
             m_StateFactory.Add (state.GetType (), state);
         }
@@ -31,7 +31,7 @@ public class HSM
         DumpStack ();
     }
 
-    public void Stop (StateID firstStateID)
+    public void Stop ()
     {
         DumpStack ();
         UpdaterProxy.Get ().Unregister (this, EUpdatePass.Last);
@@ -63,7 +63,7 @@ public class HSM
         HSMState state = null;
         if (!m_StateFactory.TryGetValue (stateID, out state))
         {
-            Debug.Assert (false, "cannot find state with ID " + stateID);
+            Assert.Fail ("cannot find state with ID " + stateID);
         }
         return state;
     }
@@ -82,7 +82,7 @@ public class HSM
                     PushState (transition.m_DestinationID);
                     break;
                 case HSMTransition.EType.Siblings:
-                    ReplaceState(transition.m_SourceID, transition.m_DestinationID);
+                    ReplaceState (transition.m_SourceID, transition.m_DestinationID);
                     break;
                 case HSMTransition.EType.Child:
                     HSMState peekState = m_StateStack.Peek ();
@@ -108,7 +108,7 @@ public class HSM
         if (stateID != null)
         {
             HSMState newState = FindState (stateID);
-            Debug.Assert (newState != null, "Cannot find state with ID " + stateID);
+            Assert.IsTrue (newState != null, "Cannot find state with ID " + stateID);
             newState.OnEnter ();
             m_StateStack.Push (newState);
             m_IsStackChanged = true;
@@ -151,12 +151,22 @@ public class HSM
 
     private void DumpStack ()
     {
-        Debug.Log ("=======================> Dump state stack begin");
+        this.DebugLog ("=======================> Dump state stack begin");
         foreach (HSMState state in m_StateStack)
         {
-            Debug.Log (state.GetType ());
+            this.DebugLog (state.GetType ());
         }
-        Debug.Log ("<======================= Dump state stack end");
+        this.DebugLog ("<======================= Dump state stack end");
+    }
+
+    public HSMState[] GetStack()
+    {
+        return m_StateStack.ToArray ();
+    }
+
+    public Dictionary<StateID, HSMState> GetStates ()
+    {
+        return m_StateFactory;
     }
 }
 

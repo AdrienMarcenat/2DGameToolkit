@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 public class GameEventManager
 {
@@ -12,17 +12,11 @@ public class GameEventManager
         m_Notifiers = new Dictionary<string, ListenerNotifier> ();
         m_GameEventQueue = new Queue<GameEvent> ();
         UpdaterProxy.Get ().Register (this, EUpdatePass.First);
-        GameEventManagerProxy.Open (this);
-    }
-
-    ~GameEventManager ()
-    {
-        GameEventManagerProxy.Close ();
     }
 
     public void Register (System.Object objectToNotify, string tag, params System.Type[] GameEventTypes)
     {
-        Debug.Assert (!m_DispatchGuard, "Cannot register a listener while dispatching !");
+        Assert.IsFalse (m_DispatchGuard, "Cannot register a listener while dispatching !");
         ListenerNotifier notifier = null;
 
         if (!m_Notifiers.TryGetValue (tag, out notifier))
@@ -31,18 +25,18 @@ public class GameEventManager
             m_Notifiers.Add (tag, notifier);
         }
 
-        Debug.Assert (notifier != null);
+        Assert.IsTrue (notifier != null);
         notifier.AddListener (objectToNotify, tag, GameEventTypes);
     }
 
     public void Unregister (System.Object objectToNotify, string tag)
     {
-        Debug.Assert (!m_DispatchGuard, "Cannot unregister a listener while dispatching !");
+        Assert.IsFalse (m_DispatchGuard, "Cannot unregister a listener while dispatching !");
         ListenerNotifier notifier = null;
 
         if (!m_Notifiers.TryGetValue (tag, out notifier))
         {
-            Debug.Assert (false, "Trying to unregister to GameEvents from " + tag + " but no notifier was found.");
+            Assert.Fail ("Trying to unregister to GameEvents from " + tag + " but no notifier was found.");
         }
 
         notifier.RemoveListener (objectToNotify, tag);
@@ -50,19 +44,21 @@ public class GameEventManager
 
     public void PushGameEvent (GameEvent e, GameEvent.EProtocol protocol)
     {
-        Debug.Assert (!m_DispatchGuard, "Cannot push GameEvent while dispatching !");
+        Assert.IsFalse (m_DispatchGuard, "Cannot push GameEvent while dispatching !");
         switch (protocol)
         {
             case GameEvent.EProtocol.Delayed:
                 m_GameEventQueue.Enqueue (e);
                 break;
             case GameEvent.EProtocol.Instant:
+                m_DispatchGuard = true;
                 Notify (e);
+                m_DispatchGuard = false;
                 break;
             case GameEvent.EProtocol.Discard:
                 break;
             default:
-                Debug.Assert (false, "Invalid GameEvent protocol");
+                Assert.Fail ("Invalid GameEvent protocol");
                 break;
         }
     }
@@ -82,14 +78,12 @@ public class GameEventManager
         string tag = e.GetTag ();
         ListenerNotifier notifier = null;
 
-        if (!m_Notifiers.TryGetValue (tag, out notifier))
+        if (m_Notifiers.TryGetValue (tag, out notifier))
         {
-            Debug.Assert (false, "No notifier foudn for tag " + tag);
+            notifier.Notify (e);
         }
-
-        notifier.Notify (e);
     }
 }
 
-class GameEventManagerProxy : UniqueProxy<GameEventManager>
+public class GameEventManagerProxy : UniqueProxy<GameEventManager>
 { }

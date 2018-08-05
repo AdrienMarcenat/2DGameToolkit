@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using AnyObject = System.Object;
+using NUnit.Framework;
 
 public enum EUpdatePass
 {
@@ -27,12 +26,6 @@ public class Updater
         {
             m_ObjectListPerPass[i] = new List<AnyObject> ();
         }
-        UpdaterProxy.Open (this);
-    }
-
-    ~Updater ()
-    {
-        UpdaterProxy.Close ();
     }
 
     public void Update ()
@@ -56,10 +49,10 @@ public class Updater
 
     public void Register (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
     {
-        Debug.Assert (!m_UpdateGuard, "Cannot register a listener while updating !");
+        Assert.IsFalse (m_UpdateGuard, "Cannot register a listener while updating !");
         foreach (EUpdatePass pass in updatePassList)
         {
-            Debug.Assert (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
+            Assert.IsTrue (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
             if (!m_ObjectListPerPass[(int)pass].Contains (objectToUpdate))
             {
                 m_ObjectListPerPass[(int)pass].Add (objectToUpdate);
@@ -69,10 +62,10 @@ public class Updater
 
     public void Unregister (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
     {
-        Debug.Assert (!m_UpdateGuard, "Cannot unregister a listener while updating !");
+        Assert.IsFalse (m_UpdateGuard, "Cannot unregister a listener while updating !");
         foreach (EUpdatePass pass in updatePassList)
         {
-            Debug.Assert (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
+            Assert.IsTrue (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
             m_ObjectListPerPass[(int)pass].Remove (objectToUpdate);
         }
     }

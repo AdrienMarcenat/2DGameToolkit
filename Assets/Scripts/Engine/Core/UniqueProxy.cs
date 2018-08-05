@@ -1,22 +1,22 @@
-﻿using UnityEngine;
+﻿using NUnit.Framework;
 
-public class UniqueProxy<T> : ScriptableObject where T : class
+public class UniqueProxy<T> where T : class
 {
     public static void Open (T instance)
     {
-        Debug.Assert (ms_Instance == null, "Proxy already set !");
+        Assert.IsTrue (ms_Instance == null, "Proxy already set !");
         ms_Instance = instance;
     }
 
     public static void Close ()
     {
-        Debug.Assert (ms_Instance != null, "Proxy wasn't set");
+        Assert.IsTrue (ms_Instance != null, "Proxy wasn't set");
         ms_Instance = null;
     }
 
     public static T Get ()
     {
-        Debug.Assert (ms_Instance != null, "Invalid proxy");
+        Assert.IsTrue (ms_Instance != null, "Invalid proxy");
         return ms_Instance;
     }
 

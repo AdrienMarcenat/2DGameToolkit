@@ -24,15 +24,9 @@ public class InputManager
 
     public InputManager ()
     {
-        InputManagerProxy.Open (this);
         this.RegisterToUpdate (EUpdatePass.BeforeAI);
         m_KeyCodes = new Dictionary<string, KeyCode> ();
         FillKeyCodes (ms_InputFileName);
-    }
-
-    ~InputManager ()
-    {
-        InputManagerProxy.Close ();
     }
 
     public void UpdateBeforeAI()

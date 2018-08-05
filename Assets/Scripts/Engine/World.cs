@@ -15,8 +15,11 @@ public class World : MonoBehaviour
         DontDestroyOnLoad (gameObject);
         // Keep the Updater first, as the other members might want to register to it
         m_Updater = new Updater ();
+        UpdaterProxy.Open (m_Updater);
         m_GameEventManager = new GameEventManager ();
+        GameEventManagerProxy.Open (m_GameEventManager);
         m_InputManager = new InputManager ();
+        InputManagerProxy.Open (m_InputManager);
 
         m_GameFlowHSM = new GameFlowHSM ();
     }
@@ -24,5 +27,12 @@ public class World : MonoBehaviour
     void Update ()
     {
         m_Updater.Update ();
+    }
+
+    private void OnDestroy ()
+    { 
+        InputManagerProxy.Close();
+        GameEventManagerProxy.Close ();
+        UpdaterProxy.Close ();
     }
 }

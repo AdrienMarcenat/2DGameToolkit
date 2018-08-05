@@ -1,6 +1,5 @@
-﻿using System.Reflection;
-using UnityEngine;
-using UnityEngine.Assertions;
+﻿using NUnit.Framework;
+using System.Reflection;
 
 public class ReflectionHelper
 {
@@ -10,9 +9,9 @@ public class ReflectionHelper
         {
             instance.GetType().InvokeMember (methodName, BindingFlags.InvokeMethod, null, instance, args);
         }
-        catch (System.MissingMethodException mme)
+        catch (System.Exception mme)
         {
-            Debug.Assert (false, "Method '" + methodName + "' was not found on type " + instance.GetType() + " (" + mme + ")");
+            Assert.Fail ("Method '" + methodName + "' was not found on type " + instance.GetType() + " (" + mme + ")");
         }
     }
 }

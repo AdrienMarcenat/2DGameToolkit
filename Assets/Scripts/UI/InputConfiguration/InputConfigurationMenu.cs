@@ -8,12 +8,16 @@ public class InputConfigurationMenu : MonoBehaviour
     void Start ()
     {
         InputManager inputManager = InputManagerProxy.Get ();
+        int buttonCount = 0;
         foreach (string inputName in inputManager.GetInputs ().Keys)
         {
             GameObject inputConfigurationButtonObject = Instantiate (m_ConfigurationButton);
             inputConfigurationButtonObject.transform.SetParent (transform, false);
-            inputConfigurationButtonObject.GetComponentInChildren<Text> ().text = inputName;
-            inputConfigurationButtonObject.GetComponentInChildren<Button> ().GetComponentInChildren<Text>().text = inputManager.GetInputs ()[inputName].ToString();
+            inputConfigurationButtonObject.GetComponent<InputConfigurationButton> ().SetInputName (inputName);
+            Text[] texts = inputConfigurationButtonObject.GetComponentsInChildren<Text> ();
+            texts[1].text = inputManager.GetInputs ()[inputName].ToString ();
+            texts[0].text = inputName;
+            buttonCount++;
         }
     }
 }

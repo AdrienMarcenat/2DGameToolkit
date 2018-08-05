@@ -2,38 +2,47 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Text))]
 public class InputConfigurationButton : MonoBehaviour
 {
-    private Text m_InputKeyCodeText;
+    [SerializeField] private Text m_InputNameText;
+    private Event m_KeyEvent;
+    private string m_InputName;
 
     private bool m_WaitingForKey;
 
     void Start ()
     {
         m_WaitingForKey = false;
-        m_InputKeyCodeText = GetComponent<Text> ();
     }
 
-    public void StartAssignment (string inputName)
+    public void StartAssignment ()
     {
         if (!m_WaitingForKey)
         {
-            StartCoroutine (AssignKey (inputName));
+            StartCoroutine (AssignKey ());
         }
     }
 
-    private IEnumerator AssignKey (string inputName)
+    public void SetInputName(string inputName)
+    {
+        m_InputName = inputName;
+    }
+
+    private void OnGUI ()
+    {
+        m_KeyEvent = Event.current;
+    }
+
+    private IEnumerator AssignKey ()
     {
         m_WaitingForKey = true;
-
-        Event keyEvent = Event.current;
-        while (!keyEvent.isKey)
+        
+        while (!m_KeyEvent.isKey)
             yield return null;
 
-        KeyCode newKeyCode = keyEvent.keyCode;
-        InputManagerProxy.Get ().ChangeKeyCode (inputName, newKeyCode);
-        m_InputKeyCodeText.text = newKeyCode.ToString ();
+        KeyCode newKeyCode = m_KeyEvent.keyCode;
+        InputManagerProxy.Get ().ChangeKeyCode (m_InputName, newKeyCode);
+        m_InputNameText.text = newKeyCode.ToString ();
 
         m_WaitingForKey = false;
     }

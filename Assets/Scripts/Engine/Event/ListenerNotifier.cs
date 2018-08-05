@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 public class ListenerNotifier
 {
@@ -14,7 +15,7 @@ public class ListenerNotifier
 
     public void Notify (GameEvent e)
     {
-        Debug.Assert (e.GetTag () == m_Tag, "GameEvent has tag " + e.GetTag () + " but notifier has tag " + m_Tag);
+        Assert.IsTrue (e.GetTag () == m_Tag, "GameEvent has tag " + e.GetTag () + " but notifier has tag " + m_Tag);
         foreach (Listener listener in m_Listeners)
         {
             if (listener.IsGameEventHandled (e))
