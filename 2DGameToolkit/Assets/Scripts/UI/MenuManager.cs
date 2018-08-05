@@ -12,19 +12,34 @@ public class MenuManager : MonoBehaviour
     void Start ()
     {
         StartCoroutine (BlinkRoutine ());
+        this.RegisterAsListener ("Player", typeof (PlayerInputGameEvent));
     }
 
-    void Update ()
+    private void OnDestroy ()
     {
-        if (Input.GetButtonDown ("Escape"))
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-			Application.Quit ();
-#endif
+        this.UnregisterAsListener ("Player");
+    }
 
-        if (Input.GetButtonDown ("Space"))
-            SceneManager.LoadScene (1);
+    public void OnGameEvent (PlayerInputGameEvent inputEvent)
+    {
+        string input = inputEvent.GetInput ();
+        EInputState state = inputEvent.GetInputState ();
+        switch (input)
+        {
+            case "Escape":
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+			    Application.Quit ();
+#endif
+                break;
+            case "Jump":
+                StopAllCoroutines ();
+                SceneManager.LoadScene (1);
+                break;
+            default:
+                break;
+        }
     }
 
     IEnumerator BlinkRoutine ()

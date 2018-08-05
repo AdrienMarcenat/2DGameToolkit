@@ -1,27 +1,42 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class World : MonoBehaviour
 {
+    private UnityLogger m_Logger;
     private Updater m_Updater;
     private GameEventManager m_GameEventManager;
     private InputManager m_InputManager;
 
     private GameFlowHSM m_GameFlowHSM;
 
-    // This should be called before any other gameobject awake
+    private static World ms_Instance;
+
+    // This should be called before any other gameobject awakes
     private void Awake ()
     {
-        DontDestroyOnLoad (gameObject);
-        // Keep the Updater first, as the other members might want to register to it
-        m_Updater = new Updater ();
-        UpdaterProxy.Open (m_Updater);
-        m_GameEventManager = new GameEventManager ();
-        GameEventManagerProxy.Open (m_GameEventManager);
-        m_InputManager = new InputManager ();
-        InputManagerProxy.Open (m_InputManager);
+        // Singleton pattern : this is the only case where it should be used
+        if(ms_Instance == null)
+        {
+            ms_Instance = this;
+            DontDestroyOnLoad (gameObject);
+            
+            // Keep the Updater first, as the other members might want to register to it
+            m_Logger = new UnityLogger ();
+            LoggerProxy.Open (m_Logger);
+            m_Updater = new Updater ();
+            UpdaterProxy.Open (m_Updater);
+            m_GameEventManager = new GameEventManager ();
+            GameEventManagerProxy.Open (m_GameEventManager);
+            m_InputManager = new InputManager ();
+            InputManagerProxy.Open (m_InputManager);
 
-        m_GameFlowHSM = new GameFlowHSM ();
+            m_GameFlowHSM = new GameFlowHSM ();
+        }
+        else if (ms_Instance != this)
+        {
+            Destroy (gameObject);
+            return;
+        }
     }
 
     void Update ()
@@ -30,9 +45,13 @@ public class World : MonoBehaviour
     }
 
     private void OnDestroy ()
-    { 
-        InputManagerProxy.Close();
-        GameEventManagerProxy.Close ();
-        UpdaterProxy.Close ();
+    {
+        if (ms_Instance == this)
+        {
+            InputManagerProxy.Close ();
+            GameEventManagerProxy.Close ();
+            UpdaterProxy.Close ();
+            LoggerProxy.Close ();
+        }
     }
 }

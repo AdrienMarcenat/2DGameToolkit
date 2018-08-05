@@ -1,3 +1,5 @@
-space:Space
-fire:X
-jump:E
+Escape:Escape
+Jump:Space
+Right:RightArrow
+Left:LeftArrow
+Fire:X

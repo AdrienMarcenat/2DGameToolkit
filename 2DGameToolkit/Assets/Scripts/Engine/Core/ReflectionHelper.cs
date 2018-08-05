@@ -11,7 +11,7 @@ public class ReflectionHelper
         }
         catch (System.Exception mme)
         {
-            Assert.Fail ("Method '" + methodName + "' was not found on type " + instance.GetType() + " (" + mme + ")");
+            Assert.Fail (mme.ToString());
         }
     }
 }

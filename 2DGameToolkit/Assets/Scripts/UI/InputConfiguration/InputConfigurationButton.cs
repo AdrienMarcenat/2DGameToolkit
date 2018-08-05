@@ -37,7 +37,7 @@ public class InputConfigurationButton : MonoBehaviour
     {
         m_WaitingForKey = true;
         
-        while (!m_KeyEvent.isKey)
+        while (m_KeyEvent.keyCode == KeyCode.None)
             yield return null;
 
         KeyCode newKeyCode = m_KeyEvent.keyCode;

@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 
+public enum EInputState
+{
+    Down,
+    Up,
+    Held,
+}
 public class PlayerInputGameEvent : GameEvent
 {
-    public PlayerInputGameEvent (string input) : base ("Player", EProtocol.Instant)
+    public PlayerInputGameEvent (string input, EInputState state) : base ("Player", EProtocol.Instant)
     {
         m_Input = input;
+        m_State = state;
     }
 
     public string GetInput ()
@@ -15,7 +22,13 @@ public class PlayerInputGameEvent : GameEvent
         return m_Input;
     }
 
+    public EInputState GetInputState ()
+    {
+        return m_State;
+    }
+
     private string m_Input;
+    private EInputState m_State;
 }
 
 public class InputManager
@@ -36,7 +49,15 @@ public class InputManager
         {
             if(Input.GetKeyDown(m_KeyCodes[inputName]))
             {
-               new PlayerInputGameEvent (inputName).Push();
+               new PlayerInputGameEvent (inputName, EInputState.Down).Push();
+            }
+            if (Input.GetKeyUp (m_KeyCodes[inputName]))
+            {
+                new PlayerInputGameEvent (inputName, EInputState.Up).Push ();
+            }
+            if (Input.GetKey (m_KeyCodes[inputName]))
+            {
+                new PlayerInputGameEvent (inputName, EInputState.Held).Push ();
             }
         }
     }
@@ -51,6 +72,7 @@ public class InputManager
         if (m_KeyCodes.ContainsKey (inputName))
         {
             m_KeyCodes[inputName] = newKeyCode;
+            PlayerPrefs.SetString (inputName, newKeyCode.ToString ());
         }
         else
         {
@@ -79,7 +101,11 @@ public class InputManager
             }
 
             string inputName = datas[0];
-            KeyCode inputKeyCode = (KeyCode)System.Enum.Parse (typeof (KeyCode), datas[1]);
+            string defaultKey = datas[1];
+            string keyCode = PlayerPrefs.GetString (inputName, defaultKey);
+            keyCode = (!keyCode.Equals("None")) ? keyCode : defaultKey;
+            KeyCode inputKeyCode = (KeyCode)System.Enum.Parse (typeof (KeyCode), keyCode);
+            
             m_KeyCodes.Add (inputName, inputKeyCode);
         }
     }
