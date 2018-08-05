@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using NUnit.Framework;
 
 public class PlayerInputGameEvent : GameEvent
 {
@@ -53,7 +54,7 @@ public class InputManager
         }
         else
         {
-            Debug.Assert (false, "Cannot find input " + inputName);
+            Assert.Fail ("Cannot find input " + inputName);
         }
     }
 
@@ -73,7 +74,7 @@ public class InputManager
             // If there is an error in print a debug message
             if (datas.Length != 2)
             {
-                Debug.Log ("Invalid number of data line " + i + " expecting 2, got " + datas.Length);
+                this.DebugLog ("Invalid number of data line " + i + " expecting 2, got " + datas.Length);
                 return;
             }
 

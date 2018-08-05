@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 public class WeaponManager : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class WeaponManager : MonoBehaviour
         }
         else
         {
-            Debug.Assert (false, "Wrong weapon Type");
+            Assert.Fail("Wrong weapon Type");
         }
     }
 }

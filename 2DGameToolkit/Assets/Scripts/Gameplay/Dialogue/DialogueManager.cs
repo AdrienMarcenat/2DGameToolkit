@@ -90,7 +90,7 @@ public class DialogueManager : MonoBehaviour
         }
         if (dialogueBeginning == 0)
         {
-            Debug.Log ("Could not find dialogue with tag " + tag);
+            this.DebugLog ("Could not find dialogue with tag " + tag);
         }
 
         for (int i = dialogueBeginning; i < dialogueEnd; i++)
@@ -98,7 +98,7 @@ public class DialogueManager : MonoBehaviour
             string[] datas = lines[i].Split (separators);
             if (datas.Length != 2)
             {
-                Debug.Log ("Invalid number of data line " + i + " expecting 2, got " + datas.Length);
+                this.DebugLog ("Invalid number of data line " + i + " expecting 2, got " + datas.Length);
                 return;
             }
             dialogue.m_Sentences.Add (new Dialogue.Sentence (datas[0], datas[1]));

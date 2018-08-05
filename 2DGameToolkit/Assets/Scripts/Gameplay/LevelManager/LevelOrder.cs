@@ -98,7 +98,7 @@ public class MusicLevelOrder : LevelOrder
 
     public override void ExecuteOrder ()
     {
-        Debug.Log ("MUSIC!!!");
+        this.DebugLog ("MUSIC!!!");
     }
 }
 
@@ -125,6 +125,6 @@ public class EndLevelOrder : LevelOrder
 
     public override void ExecuteOrder ()
     {
-        Debug.Log ("END LEVEL!!!");
+        this.DebugLog ("END LEVEL!!!");
     }
 }

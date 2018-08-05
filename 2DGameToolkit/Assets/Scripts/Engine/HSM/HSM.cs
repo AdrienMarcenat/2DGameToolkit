@@ -97,7 +97,7 @@ public class HSM
                 case HSMTransition.EType.None:
                     break;
                 default:
-                    Debug.Assert (false, "Invalid transition type");
+                    Assert.Fail ("Invalid transition type");
                     break;
             }
         }
