@@ -47,14 +47,14 @@ This project should remain game agnostic as uch as possible.
 
 ### Naming
 
-| Item    | Prefix  |   Case     |
-|---------|---------|------------|
-| class   |         | PascalCase |
-| method  |         | PascalCase |
-| Interface  |   I      | PascalCase |
-| Interface  |   E      | PascalCase |
-| static member  |   ms_      | PascalCase |
-| other member  |   m_      | PascalCase |
+| Item          | Prefix  |   Case     |
+|---------------|---------|------------|
+| class         |         | PascalCase |
+| method        |         | PascalCase |
+| Interface     |   I     | PascalCase |
+| Enum          |   E     | PascalCase |
+| static member |   ms_   | PascalCase |
+| other member  |   m_    | PascalCase |
 
 ### Brackets
 
