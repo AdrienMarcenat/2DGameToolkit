@@ -24,7 +24,9 @@
 *.pdb
 *.opendb
 
-2DGameToolkit/package
+2DGameToolkit/package*
+2DGameToolkitTest/Properties*
+2DGameToolkitTest/bin
 
 # Unity3D generated meta files
 *.pidb.meta
