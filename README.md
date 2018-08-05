@@ -55,7 +55,6 @@ This project should remain game agnostic as uch as possible.
 | Interface  |   E      | PascalCase |
 | static member  |   ms_      | PascalCase |
 | other member  |   m_      | PascalCase |
-|---------------|-----------|------------|
 
 ### Brackets
 
