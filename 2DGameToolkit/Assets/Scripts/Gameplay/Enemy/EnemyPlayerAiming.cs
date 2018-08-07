@@ -12,7 +12,7 @@ public class EnemyPlayerAiming : EnemyAI
 
     protected override void Fire ()
     {
-        m_WeaponManager.Fire (0, m_FireSalveNumber, m_SizeModifier, m_Target.position - transform.position);
+        m_WeaponManager.AddFireCommand (0, m_FireSalveNumber, m_SizeModifier, m_Target.position - transform.position);
     }
 }
 

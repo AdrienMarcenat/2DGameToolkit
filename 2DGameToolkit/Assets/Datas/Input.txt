@@ -1,4 +1,4 @@
-Escape:Escape
+Pause:Escape
 Jump:Space
 Right:RightArrow
 Left:LeftArrow

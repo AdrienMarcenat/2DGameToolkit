@@ -16,17 +16,16 @@ public class Enemy : MonoBehaviour
 
     protected void Awake ()
     {
-        m_Animator = GetComponent<Animator> ();
         m_Health = GetComponent<Health> ();
         m_Sprite = GetComponentInChildren<SpriteRenderer> ();
         m_InitialColor = m_Sprite.color;
 
-        this.RegisterAsListener (gameObject.tag, typeof (GameOverGameEvent), typeof (DamageGameEvent));
+        this.RegisterAsListener (gameObject.name, typeof (GameOverGameEvent), typeof (DamageGameEvent));
     }
 
     IEnumerator HitRoutine (float damage)
     {
-        m_Sprite.color = Color.Lerp (Color.blue, Color.red, damage);
+        m_Sprite.color = Color.Lerp (Color.blue, Color.red, damage / 100);
         yield return new WaitForSeconds (m_HitColorTime);
         m_Sprite.color = m_InitialColor;
     }
@@ -38,7 +37,6 @@ public class Enemy : MonoBehaviour
 
     public void OnGameEvent (GameOverGameEvent gameOverEvent)
     {
-        m_Animator.SetTrigger ("isDying");
         GetComponent<BoxCollider2D> ().enabled = false;
         Destroy (gameObject, 1);
     }

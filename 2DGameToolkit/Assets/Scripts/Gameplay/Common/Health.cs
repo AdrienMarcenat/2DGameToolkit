@@ -53,7 +53,7 @@ public class Health : MonoBehaviour
         }
 
 		m_CurrentHealth = Mathf.Max (0, m_CurrentHealth - m_DamageModifier * damage);
-        new DamageGameEvent (gameObject.tag, damage);
+        new DamageGameEvent (gameObject.name, damage).Push();
 
 		CheckIfGameOver ();
 	}
@@ -77,7 +77,7 @@ public class Health : MonoBehaviour
 	{
 		if (m_CurrentHealth <= 0)
 		{
-			new GameOverGameEvent (gameObject.tag);
+			new GameOverGameEvent (gameObject.name).Push ();
 		}
 	}
 

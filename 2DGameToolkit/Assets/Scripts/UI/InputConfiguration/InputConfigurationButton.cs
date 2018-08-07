@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class InputConfigurationButton : MonoBehaviour
 {
-    [SerializeField] private Text m_InputNameText;
+    [SerializeField] private Text m_InputButtonText;
     private Event m_KeyEvent;
     private string m_InputName;
 
@@ -42,7 +42,7 @@ public class InputConfigurationButton : MonoBehaviour
 
         KeyCode newKeyCode = m_KeyEvent.keyCode;
         InputManagerProxy.Get ().ChangeKeyCode (m_InputName, newKeyCode);
-        m_InputNameText.text = newKeyCode.ToString ();
+        m_InputButtonText.text = newKeyCode.ToString ();
 
         m_WaitingForKey = false;
     }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -16,15 +15,27 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    public void Fire (int weaponType, float numberOfShots, float sizeModifier, Vector3 target)
+    public void Fire (int weaponType, Vector3 target, float sizeModifier = 1f)
     {
         if (m_Weapons.ContainsKey (weaponType))
         {
-            m_Weapons[weaponType].Fire (numberOfShots, sizeModifier, target);
+            m_Weapons[weaponType].Fire (target, sizeModifier);
         }
         else
         {
             Assert.Fail("Wrong weapon Type");
+        }
+    }
+
+    public void AddFireCommand (int weaponType, float numberOfShots, float sizeModifier, Vector3 target)
+    {
+        if (m_Weapons.ContainsKey (weaponType))
+        {
+            m_Weapons[weaponType].AddFireCommand (numberOfShots, sizeModifier, target);
+        }
+        else
+        {
+            Assert.Fail ("Wrong weapon Type");
         }
     }
 }

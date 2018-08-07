@@ -3,6 +3,7 @@ using System.Collections;
 using NUnit.Framework;
 
 [RequireComponent(typeof(MovingObject))]
+[RequireComponent (typeof (WeaponManager))]
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float m_JumpForce = 5;
@@ -10,14 +11,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask m_WhatIsGround;
 
     private MovingObject m_Mover;
+    private WeaponManager m_WeaponManager;
     private Transform m_GroundCheck;
     private const float ms_GroundedRadius = 0.2f;
     private bool m_Grounded;
+    private Vector3 m_FacingDirection;
+
+    private static Vector3 ms_Right = new Vector3 (1, 0, 0);
+    private static Vector3 ms_Left = new Vector3 (-1, 0, 0);
 
     void Start ()
     {
         m_Mover = GetComponent<MovingObject> ();
+        m_WeaponManager = GetComponent<WeaponManager> ();
         m_GroundCheck = transform.Find ("GroundCheck");
+        m_FacingDirection = new Vector3 (1, 0, 0);
         this.RegisterAsListener ("Player", typeof(PlayerInputGameEvent));
     }
 
@@ -47,12 +55,14 @@ public class PlayerController : MonoBehaviour
                 break;
             case "Right":
                 Move (state == EInputState.Held ? 1 : 0);
+                m_FacingDirection = ms_Right;
                 break;
             case "Left":
                 Move (state == EInputState.Held ? -1 : 0);
+                m_FacingDirection = ms_Left;
                 break;
             case "Fire":
-                if (state == EInputState.Down)
+                if (state == EInputState.Held)
                 {
                     Fire ();
                 }
@@ -82,6 +92,6 @@ public class PlayerController : MonoBehaviour
 
     private void Fire ()
     {
-
+        m_WeaponManager.Fire (0, m_FacingDirection);
     }
 }

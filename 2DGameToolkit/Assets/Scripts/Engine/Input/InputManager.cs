@@ -9,6 +9,7 @@ public enum EInputState
     Up,
     Held,
 }
+
 public class PlayerInputGameEvent : GameEvent
 {
     public PlayerInputGameEvent (string input, EInputState state) : base ("Player", EProtocol.Instant)

@@ -49,7 +49,7 @@ public class Weapon : MonoBehaviour
         }
         else if (m_FireCommands.Count > 0)
         {
-            FireInternal ();
+            ProcessFireCommand ();
         }
     }
 
@@ -58,23 +58,20 @@ public class Weapon : MonoBehaviour
         m_CurrentAmmo = Mathf.Clamp (m_CurrentAmmo + amount, 0, m_TotalAmmo);
     }
 
-    public void Fire (float numberOfShots, float sizeModifier, Vector3 target)
+    public void AddFireCommand (float numberOfShots, float sizeModifier, Vector3 target)
     {
         m_FireCommands.Enqueue (new FireCommand(numberOfShots, sizeModifier, target));
     }
 
-    private void FireInternal ()
+    public bool Fire (Vector3 fireDirection, float sizeModifier)
     {
-        if (m_CurrentAmmo == 0)
+        if (m_CurrentAmmo == 0 || m_FireDelay < m_FireRate)
         {
-            return;
+            return false;
         }
 
         m_FireDelay = 0;
         SetAmmo (-1);
-
-        FireCommand fireCommand = m_FireCommands.Peek ();
-        Vector3 fireDirection = fireCommand.m_Target.normalized;
 
         GameObject bullet = Instantiate (m_BulletPrefab);
         if (bullet.GetComponent<Bullet> ().IsFollowingShooter ())
@@ -85,14 +82,25 @@ public class Weapon : MonoBehaviour
         {
             bullet.transform.position = transform.position;
         }
-        bullet.transform.localScale *= fireCommand.m_SizeModifier;
+        bullet.transform.localScale *= sizeModifier;
         bullet.GetComponent<Rigidbody2D> ().velocity = m_AmmoVelocity * fireDirection;
         bullet.GetComponentInChildren<SpriteRenderer> ().transform.rotation = new Quaternion (0, 0, Vector2.SignedAngle (Vector2.up, fireDirection), 0);
 
-        fireCommand.DecreaseNumberOfShots ();
-        if (fireCommand.m_NumberOfShots == 0)
+        return true;
+    }
+
+    private void ProcessFireCommand ()
+    {
+        FireCommand fireCommand = m_FireCommands.Peek ();
+        Vector3 fireDirection = fireCommand.m_Target.normalized;
+
+        if (Fire (fireDirection, fireCommand.m_SizeModifier))
         {
-            m_FireCommands.Dequeue ();
+            fireCommand.DecreaseNumberOfShots ();
+            if (fireCommand.m_NumberOfShots == 0)
+            {
+                m_FireCommands.Dequeue ();
+            }
         }
     }
 

@@ -1,45 +1,45 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
+    [SerializeField] GameObject m_MainMenu;
     [SerializeField] GameObject m_BlinkingText;
     [SerializeField] float m_BlinkingRate;
 
     void Start ()
     {
+        m_MainMenu.SetActive (false);
         StartCoroutine (BlinkRoutine ());
-        this.RegisterAsListener ("Player", typeof (PlayerInputGameEvent));
     }
 
-    private void OnDestroy ()
+    public void Update ()
     {
-        this.UnregisterAsListener ("Player");
-    }
-
-    public void OnGameEvent (PlayerInputGameEvent inputEvent)
-    {
-        string input = inputEvent.GetInput ();
-        EInputState state = inputEvent.GetInputState ();
-        switch (input)
+        if (Input.GetButtonDown("Escape"))
         {
-            case "Escape":
+            Quit ();
+        }
+        else if (Input.anyKeyDown)
+        {
+            StopAllCoroutines ();
+            m_BlinkingText.SetActive (false);
+            m_MainMenu.SetActive (true);
+        }
+    }
+
+    public void Quit ()
+    {
 #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+        UnityEditor.EditorApplication.isPlaying = false;
 #else
 			    Application.Quit ();
 #endif
-                break;
-            case "Jump":
-                StopAllCoroutines ();
-                SceneManager.LoadScene (1);
-                break;
-            default:
-                break;
-        }
+    }
+
+    public void StartGame()
+    {
+        SceneManager.LoadScene (1);
     }
 
     IEnumerator BlinkRoutine ()

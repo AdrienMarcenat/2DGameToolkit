@@ -5,33 +5,22 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private RectTransform m_HealthContent;
     [SerializeField] private Health m_Health;
-
     private float m_Fraction = 1f;
 
-    private void SetFraction (float fraction)
+    private void Awake ()
     {
-        m_Fraction = fraction;
-        UpdateFraction ();
+        this.RegisterAsListener (transform.parent.name, typeof (DamageGameEvent));
     }
 
-    void Update ()
+    private void OnDestroy ()
     {
-        SetFraction (m_Health.GetCurrentHealth () / m_Health.GetTotalHealth ());
+        this.UnregisterAsListener (transform.parent.name);
     }
 
-    protected void UpdateFraction ()
+    public void OnGameEvent (DamageGameEvent damageEvent)
     {
-        if (m_Fraction > 1)
-        {
-            m_Fraction = 1f;
-        }
-        else
-        if (m_Fraction < 0)
-        {
-            m_Fraction = 0;
-        }
-        m_HealthContent.anchorMax = new Vector2 (m_Fraction, 1);
+        m_Fraction = Mathf.Clamp01 (m_Health.GetCurrentHealth () / m_Health.GetTotalHealth ());
+        transform.localScale = new Vector3 (m_Fraction, transform.localScale.y, transform.localScale.z);
     }
 }
