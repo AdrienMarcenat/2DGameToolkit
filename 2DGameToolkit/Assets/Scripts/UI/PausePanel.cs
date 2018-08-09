@@ -1,28 +1,21 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PausePanel : MonoBehaviour
 {
-    [SerializeField] GameObject m_PausePanel;
-
-    void Start ()
+    private void Awake ()
     {
-        m_PausePanel.SetActive (false);
+        gameObject.SetActive (false);
+        this.RegisterAsListener ("Game", typeof (PauseEvent));
     }
 
-    void OnEnable ()
+    public void OnGameEvent (PauseEvent pause)
     {
-        //GameFlowPauseState.Pause += Pause;
+        gameObject.SetActive (pause.IsPaused ());
     }
 
-    void OnDisable ()
+    private void OnDestroy ()
     {
-        //GameFlowPauseState.Pause -= Pause;
-    }
-
-    void Pause (bool pause)
-    {
-        m_PausePanel.SetActive (pause);
+        this.UnregisterAsListener ("Game");
     }
 }
 

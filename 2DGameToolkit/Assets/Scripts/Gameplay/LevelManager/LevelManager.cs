@@ -28,11 +28,23 @@ public class LevelManager
 {
     private int m_CurrentLevel = 0;
 
-    public void LoadLevel (int levelIndex)
+    public void LoadScene (int levelIndex)
     {
         new LevelEvent (m_CurrentLevel, false).Push ();
         m_CurrentLevel = levelIndex;
         SceneManager.LoadScene (levelIndex);
+    }
+
+    public void LoadScene (string levelName)
+    {
+        new LevelEvent (m_CurrentLevel, false).Push ();
+        m_CurrentLevel = SceneManager.GetSceneByName(levelName).buildIndex;
+        SceneManager.LoadScene (levelName);
+    }
+
+    public string GetActiveSceneName()
+    {
+        return SceneManager.GetActiveScene ().name;
     }
 
     private void OnSceneLoaded (Scene scene, LoadSceneMode mode)

@@ -20,13 +20,18 @@ public class PlayerController : MonoBehaviour
     private static Vector3 ms_Right = new Vector3 (1, 0, 0);
     private static Vector3 ms_Left = new Vector3 (-1, 0, 0);
 
-    void Start ()
+    void Awake ()
     {
         m_Mover = GetComponent<MovingObject> ();
         m_WeaponManager = GetComponent<WeaponManager> ();
         m_GroundCheck = transform.Find ("GroundCheck");
         m_FacingDirection = new Vector3 (1, 0, 0);
         this.RegisterAsListener ("Player", typeof(PlayerInputGameEvent));
+    }
+
+    private void OnDestroy ()
+    {
+        this.UnregisterAsListener ("Player");
     }
 
     private void FixedUpdate ()
