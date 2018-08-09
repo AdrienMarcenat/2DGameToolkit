@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
-public class GameGUI : MonoBehaviour
+public class FadeImage : MonoBehaviour
 {
     private Image m_FadeInOutImage;
     [SerializeField] float m_FadeSpeed;
@@ -11,6 +10,25 @@ public class GameGUI : MonoBehaviour
     void Awake ()
     {
         m_FadeInOutImage = GetComponent<Image> ();
+        this.RegisterAsListener ("Game", typeof (LevelEvent));
+        StartCoroutine (FadeIn ());
+    }
+
+    private void OnDestroy ()
+    {
+        this.UnregisterAsListener ("Game");
+    }
+
+    public void OnGameEVent(LevelEvent levelEvent)
+    {
+        if(levelEvent.IsEntered())
+        {
+            StartCoroutine (FadeIn ());
+        }
+        else
+        {
+            StartCoroutine (FadeOut ());
+        }
     }
 
     IEnumerator FadeIn ()
@@ -49,16 +67,6 @@ public class GameGUI : MonoBehaviour
         Color c = m_FadeInOutImage.color;
         c.a = a;
         m_FadeInOutImage.color = c;
-    }
-
-    private void ChangeScene ()
-    {
-        StartCoroutine (FadeOut ());
-    }
-
-    private void OnSceneLoaded (Scene scene, LoadSceneMode mode)
-    {
-        StartCoroutine (FadeIn ());
     }
 }
 

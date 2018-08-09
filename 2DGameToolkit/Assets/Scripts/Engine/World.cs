@@ -6,6 +6,7 @@ public class World : MonoBehaviour
     private Updater m_Updater;
     private GameEventManager m_GameEventManager;
     private InputManager m_InputManager;
+    private LevelManager m_LevelManager;
 
     private GameFlowHSM m_GameFlowHSM;
 
@@ -29,6 +30,8 @@ public class World : MonoBehaviour
             GameEventManagerProxy.Open (m_GameEventManager);
             m_InputManager = new InputManager ();
             InputManagerProxy.Open (m_InputManager);
+            m_LevelManager = new LevelManager ();
+            LevelManagerProxy.Open (m_LevelManager);
 
             m_GameFlowHSM = new GameFlowHSM ();
         }
@@ -42,16 +45,5 @@ public class World : MonoBehaviour
     void Update ()
     {
         m_Updater.Update ();
-    }
-
-    private void OnDestroy ()
-    {
-        if (ms_Instance == this)
-        {
-            InputManagerProxy.Close ();
-            GameEventManagerProxy.Close ();
-            UpdaterProxy.Close ();
-            LoggerProxy.Close ();
-        }
     }
 }
