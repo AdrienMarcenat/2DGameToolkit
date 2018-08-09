@@ -19,9 +19,9 @@ public class FadeImage : MonoBehaviour
         this.UnregisterAsListener ("Game");
     }
 
-    public void OnGameEVent(LevelEvent levelEvent)
+    public void OnGameEVent (LevelEvent levelEvent)
     {
-        if(levelEvent.IsEntered())
+        if (levelEvent.IsEntered ())
         {
             StartCoroutine (FadeIn ());
         }

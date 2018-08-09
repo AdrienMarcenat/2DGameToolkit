@@ -1,72 +1,72 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof (Camera))]
 public class Camera2D : MonoBehaviour
 {
-    [SerializeField] float m_FollowSpeed;
-    [SerializeField] float m_ZoomFactor = 1.0f;
-    [SerializeField] float m_ZoomSpeed = 5.0f;
-    [SerializeField] Transform m_TrackingTarget;
+    [SerializeField] private Transform m_TrackingTarget;
+    [SerializeField] private float m_XOffset = 0f;
+    [SerializeField] private float m_YOffset = 0f;
+    [SerializeField] private float m_FollowSpeed = 5f;
+    [SerializeField] private bool m_IsXLocked = false;
+    [SerializeField] private bool m_IsYLocked = false;
 
-    private Camera m_MainCamera;
     private Transform m_Player;
+    private List<Transform> m_Lanes;
 
     void Awake ()
     {
-        m_MainCamera = GetComponent<Camera> ();
         m_Player = GameObject.FindGameObjectWithTag ("Player").transform;
-        SetZoom (m_ZoomFactor);
+        m_Lanes = new List<Transform> ();
+        foreach (Transform lane in GameObject.Find ("Lanes").GetComponentsInChildren<Transform> ())
+        {
+            m_Lanes.Add (lane);
+        }
+        m_Lanes.RemoveAt (0);
+        m_Lanes.Sort ((Transform t1, Transform t2) => t1.position.y.CompareTo (t2.position.y));
     }
 
-    void Update ()
+    void FixedUpdate ()
     {
         if (m_TrackingTarget == null)
             m_TrackingTarget = m_Player;
 
-        float xTarget = m_TrackingTarget.position.x;
-        float yTarget = m_TrackingTarget.position.y;
+        float xTarget = m_TrackingTarget.position.x + m_XOffset;
+        float yTarget = m_TrackingTarget.position.y + m_YOffset;
 
-        float xNew = Mathf.Lerp (transform.position.x, xTarget, Time.deltaTime * m_FollowSpeed);
-        float yNew = Mathf.Lerp (transform.position.y, yTarget, Time.deltaTime * m_FollowSpeed);
-
-        transform.position = new Vector3 (xNew, yNew, transform.position.z);
-    }
-
-    public void SetZoom (float m_ZoomFactor)
-    {
-        if (m_MainCamera == null)
+        float xNew = transform.position.x;
+        if (!m_IsXLocked)
         {
-            m_MainCamera = GetComponent<Camera> ();
+            xNew = Mathf.Lerp (transform.position.x, xTarget, Time.deltaTime * m_FollowSpeed);
         }
-        this.m_ZoomFactor = m_ZoomFactor;
-        StartCoroutine (Zoom ());
-    }
 
-    IEnumerator Zoom ()
-    {
-        float targetSize = m_ZoomFactor;
-        if (targetSize < m_MainCamera.orthographicSize)
+        float yNew = transform.position.y;
+        if (!m_IsYLocked)
         {
-            while (targetSize < GetComponent<Camera> ().orthographicSize)
-            {
-                m_MainCamera.orthographicSize -= Time.deltaTime * m_ZoomSpeed;
-                yield return null;
-            }
+            yNew = Mathf.Lerp (transform.position.y, yTarget, Time.deltaTime * m_FollowSpeed);
         }
         else
         {
-            while (targetSize > m_MainCamera.orthographicSize)
+            foreach (Transform lane in m_Lanes)
             {
-                m_MainCamera.orthographicSize += Time.deltaTime * m_ZoomSpeed;
-                yield return null;
+                yNew = lane.position.y;
+                if (m_TrackingTarget.position.y < lane.position.y)
+                {
+                    break;
+                }
             }
         }
+
+        yNew = Mathf.Lerp (transform.position.y, yNew, Time.deltaTime * m_FollowSpeed);
+        transform.position = new Vector3 (xNew, yNew, transform.position.z);
     }
 
-    public void SetTrackingTarget (Transform newTarget)
+    public Transform GetTrackingTarget ()
     {
-        m_TrackingTarget = newTarget;
+        return m_TrackingTarget;
+    }
+
+    public void SetTrackingTarget (Transform trackingTarget)
+    {
+        m_TrackingTarget = trackingTarget;
     }
 }

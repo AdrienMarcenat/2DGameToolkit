@@ -1,42 +1,43 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraShake : MonoBehaviour 
+public class CameraShake : MonoBehaviour
 {
-	public Transform camTransform;
-	public float shakeDuration = 0f;
-	public float shakeAmount = 0.7f;
-	public float decreaseFactor = 1.0f;
+    [SerializeField] private int m_DamageTreshold = 20;
+    [SerializeField] private float m_ShakeDuration = 0.2f;
+    [SerializeField] private float m_ShakeAmount = 0.2f;
 
-	Vector3 originalPos;
+    private float m_ShakeTimer = 0;
 
-	void Awake()
-	{
-		if (camTransform == null)
-		{
-			camTransform = GetComponent<Transform>();
-		}
-	}
+    private void Awake ()
+    {
+        this.RegisterAsListener ("Player", typeof (DamageGameEvent));
+    }
 
-	void OnEnable()
-	{
-		originalPos = camTransform.localPosition;
-	}
+    private void OnDestroy ()
+    {
+        this.UnregisterAsListener ("Player");
+    }
 
-	void Update()
-	{
-		if (shakeDuration > 0)
-		{
-			camTransform.localPosition = originalPos + Random.insideUnitSphere * shakeAmount;
+    public void OnGameEvent (DamageGameEvent damageEvent)
+    {
+        if (damageEvent.GetDamage () >= m_DamageTreshold)
+        {
+            StartCoroutine (ShakeRoutine ());
+        }
+    }
 
-			shakeDuration -= Time.deltaTime * decreaseFactor;
-		}
-		else
-		{
-			shakeDuration = 0f;
-			camTransform.localPosition = originalPos;
-		}
-	}
+    IEnumerator ShakeRoutine ()
+    {
+        float originalY = transform.localPosition.y;
+        m_ShakeTimer = m_ShakeDuration;
+        while (m_ShakeTimer > 0)
+        {
+            transform.localPosition += Random.insideUnitSphere * m_ShakeAmount;
+            m_ShakeTimer -= Time.deltaTime;
+            yield return null;
+        }
+        transform.localPosition = new Vector3 (transform.localPosition.x, originalY, transform.localPosition.z);
+    }
 
 }

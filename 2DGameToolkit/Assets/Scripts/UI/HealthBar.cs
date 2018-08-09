@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Health m_Health;
-    private float m_Fraction = 1f;
 
     private void Awake ()
     {
@@ -20,7 +16,7 @@ public class HealthBar : MonoBehaviour
 
     public void OnGameEvent (DamageGameEvent damageEvent)
     {
-        m_Fraction = Mathf.Clamp01 (m_Health.GetCurrentHealth () / m_Health.GetTotalHealth ());
-        transform.localScale = new Vector3 (m_Fraction, transform.localScale.y, transform.localScale.z);
+        float fraction = Mathf.Clamp01 (m_Health.GetCurrentHealth () / m_Health.GetTotalHealth ());
+        transform.localScale = new Vector3 (fraction, transform.localScale.y, transform.localScale.z);
     }
 }

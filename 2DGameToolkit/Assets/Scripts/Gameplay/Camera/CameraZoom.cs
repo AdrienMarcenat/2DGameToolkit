@@ -1,39 +1,34 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraZoom : MonoBehaviour 
+public class CameraZoom : MonoBehaviour
 {
-	[SerializeField]
-	float zoomFactor = 1.0f;
+    [SerializeField] private float m_ZoomFactor = 1.0f;
+    [SerializeField] private float m_ZoomSpeed = 5.0f;
 
-	[SerializeField]
-	float zoomSpeed = 5.0f;
+    private float m_OriginalSize = 0f;
+    private Camera m_Camera;
 
-	private float originalSize = 0f;
+    private void Start ()
+    {
+        m_Camera = GetComponent<Camera> ();
+        m_OriginalSize = m_Camera.orthographicSize;
+    }
 
-	private Camera thisCamera;
+    public void SetZoom (float m_ZoomFactor)
+    {
+        this.m_ZoomFactor = m_ZoomFactor;
+        StartCoroutine (Zoom ());
+    }
 
-	void Start()
-	{
-		thisCamera = GetComponent<Camera>();
-		originalSize = thisCamera.orthographicSize;
-	}
-
-	void SetZoom(float zoomFactor)
-	{
-		this.zoomFactor = zoomFactor;
-		StartCoroutine (Zoom());
-	}
-
-	IEnumerator Zoom()
-	{
-		float targetSize = originalSize * zoomFactor;
-		while (targetSize != thisCamera.orthographicSize)
-		{
-			thisCamera.orthographicSize = Mathf.Lerp(thisCamera.orthographicSize, 
-				targetSize, Time.deltaTime * zoomSpeed);
-			yield return null;
-		}
-	}
+    IEnumerator Zoom ()
+    {
+        float targetSize = m_OriginalSize * m_ZoomFactor;
+        while (targetSize != m_Camera.orthographicSize)
+        {
+            m_Camera.orthographicSize = Mathf.Lerp (m_Camera.orthographicSize,
+                targetSize, Time.deltaTime * m_ZoomSpeed);
+            yield return null;
+        }
+    }
 }
