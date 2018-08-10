@@ -43,7 +43,7 @@ AI is supposed to be driven with the HSM system.
 
 The goal is to provide a user friendly, easy to debug framework, with a bunch of basic gameplay element that every game need.
 To that extent a declarative syntax is enforced using reflection. This is not great for performance but it does not matter for 2D games made for a game jam. Debugging is made easier with the help of assertion, unittest, and the event base structure that allow easy decoupling.
-This project should remain game agnostic as uch as possible.
+This project should remain game agnostic as much as possible.
 
 ### Naming
 
