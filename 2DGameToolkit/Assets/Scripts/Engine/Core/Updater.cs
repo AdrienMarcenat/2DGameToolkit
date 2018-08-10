@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 using AnyObject = System.Object;
-using NUnit.Framework;
 
 public enum EUpdatePass
 {

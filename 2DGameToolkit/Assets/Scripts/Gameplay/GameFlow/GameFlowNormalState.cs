@@ -3,7 +3,7 @@ public class GameFlowNormalState : HSMState
 {
     public override void OnEnter ()
     {
-        LevelManagerProxy.Get ().LoadScene ("Level1");
+        LevelManagerProxy.Get ().LoadScene (1);
         this.RegisterAsListener ("Player", typeof (GameOverGameEvent), typeof (PlayerInputGameEvent));
     }
 

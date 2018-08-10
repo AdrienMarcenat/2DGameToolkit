@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using UnityEngine.Assertions;
 
 public class UniqueProxy<T> where T : class
 {

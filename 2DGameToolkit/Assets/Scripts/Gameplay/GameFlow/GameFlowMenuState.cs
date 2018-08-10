@@ -2,7 +2,7 @@
 {
     public override void OnEnter ()
     {
-        LevelManagerProxy.Get ().LoadScene ("MainMenu");
+        LevelManagerProxy.Get ().LoadScene (0);
         this.RegisterAsListener ("Game", typeof (GameFlowEvent));
     }
 

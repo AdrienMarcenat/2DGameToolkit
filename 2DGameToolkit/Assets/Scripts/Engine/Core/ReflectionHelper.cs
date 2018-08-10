@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using System.Reflection;
+﻿using System.Reflection;
+using UnityEngine.Assertions;
 
 public class ReflectionHelper
 {
@@ -11,7 +11,7 @@ public class ReflectionHelper
         }
         catch (System.Exception mme)
         {
-            Assert.Fail (mme.ToString());
+            Assert.IsTrue (false, mme.ToString());
         }
     }
 }

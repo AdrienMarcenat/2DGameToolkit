@@ -41,6 +41,11 @@ public class Enemy : MonoBehaviour
         Destroy (gameObject, 1);
     }
 
+    private void OnDestroy ()
+    {
+        this.UnregisterAsListener (gameObject.name);
+    }
+
     private void OnCollisionStay2D (Collision2D other)
     {
         if (other.gameObject.tag == "Player")

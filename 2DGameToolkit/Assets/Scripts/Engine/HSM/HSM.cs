@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 using StateID = System.Type;
-using NUnit.Framework;
+
 
 public class HSM
 {
@@ -63,7 +63,7 @@ public class HSM
         HSMState state = null;
         if (!m_StateFactory.TryGetValue (stateID, out state))
         {
-            Assert.Fail ("cannot find state with ID " + stateID);
+            Assert.IsTrue (false, "cannot find state with ID " + stateID);
         }
         return state;
     }
@@ -97,7 +97,7 @@ public class HSM
                 case HSMTransition.EType.None:
                     break;
                 default:
-                    Assert.Fail ("Invalid transition type");
+                    Assert.IsTrue (false, "Invalid transition type");
                     break;
             }
         }

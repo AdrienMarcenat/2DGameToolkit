@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace _2DGameToolKitTest
@@ -75,7 +76,7 @@ namespace _2DGameToolKitTest
             DummyAILogic objectToNotify = new DummyAILogic ();
             objectToNotify.RegisterToUpdate (EUpdatePass.Last);
 
-            Assert.ThrowsException<NUnit.Framework.AssertionException> (delegate { m_Updater.Update (); });
+            Assert.ThrowsException<SecurityException> (delegate { m_Updater.Update (); });
         }
     }
 }

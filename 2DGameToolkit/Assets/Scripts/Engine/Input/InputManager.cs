@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
-using NUnit.Framework;
+using UnityEngine.Assertions;
 
 public enum EInputState
 {
@@ -77,7 +77,7 @@ public class InputManager
         }
         else
         {
-            Assert.Fail ("Cannot find input " + inputName);
+            Assert.IsTrue (false, "Cannot find input " + inputName);
         }
     }
 

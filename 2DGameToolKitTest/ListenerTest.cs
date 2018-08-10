@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Security;
 
 namespace _2DGameToolKitTest
 {
@@ -90,7 +90,7 @@ namespace _2DGameToolKitTest
         {
             DummyListener listener = new DummyListener ();
             listener.RegisterAsListener ("Dummy", typeof (DummyGameEvent));
-            Assert.ThrowsException<NUnit.Framework.AssertionException> (delegate { listener.UnregisterAsListener ("Not Dummy"); });
+            Assert.ThrowsException<SecurityException> (delegate { listener.UnregisterAsListener ("Not Dummy"); });
 
             listener.UnregisterAsListener ("Dummy");
             new DummyGameEvent ().Push ();
@@ -102,7 +102,7 @@ namespace _2DGameToolKitTest
         {
             DummyListener listener = new DummyListener ();
             listener.RegisterAsListener ("Dummy", typeof (SecondDummyGameEvent));
-            Assert.ThrowsException<NUnit.Framework.AssertionException> (delegate { new SecondDummyGameEvent ().Push (); });
+            Assert.ThrowsException<SecurityException> (delegate { new SecondDummyGameEvent ().Push (); });
         }
 
         [TestMethod]
@@ -111,7 +111,7 @@ namespace _2DGameToolKitTest
             DummyListener listener = new DummyListener ();
             listener.RegisterAsListener ("Dummy", typeof (ThirdDummyGameEvent));
 
-            Assert.ThrowsException<NUnit.Framework.AssertionException> (delegate { new ThirdDummyGameEvent ().Push (); });
+            Assert.ThrowsException<SecurityException> (delegate { new ThirdDummyGameEvent ().Push (); });
         }
     }
 }

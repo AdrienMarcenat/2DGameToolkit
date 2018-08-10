@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using NUnit.Framework;
+using UnityEngine.Assertions;
 
 public class GameEventManager
 {
@@ -36,7 +36,7 @@ public class GameEventManager
 
         if (!m_Notifiers.TryGetValue (tag, out notifier))
         {
-            Assert.Fail ("Trying to unregister to GameEvents from " + tag + " but no notifier was found.");
+            Assert.IsTrue (false, "Trying to unregister to GameEvents from " + tag + " but no notifier was found.");
         }
 
         notifier.RemoveListener (objectToNotify, tag);
@@ -58,7 +58,7 @@ public class GameEventManager
             case GameEvent.EProtocol.Discard:
                 break;
             default:
-                Assert.Fail ("Invalid GameEvent protocol");
+                Assert.IsTrue (false, "Invalid GameEvent protocol");
                 break;
         }
     }

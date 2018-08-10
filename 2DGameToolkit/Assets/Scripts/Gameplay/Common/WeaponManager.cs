@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using NUnit.Framework;
+using UnityEngine.Assertions;
 
 public class WeaponManager : MonoBehaviour
 {
@@ -23,7 +23,7 @@ public class WeaponManager : MonoBehaviour
         }
         else
         {
-            Assert.Fail("Wrong weapon Type");
+            Assert.IsTrue (false, "Wrong weapon Type");
         }
     }
 
@@ -35,7 +35,7 @@ public class WeaponManager : MonoBehaviour
         }
         else
         {
-            Assert.Fail ("Wrong weapon Type");
+            Assert.IsTrue (false, "Wrong weapon Type");
         }
     }
 }

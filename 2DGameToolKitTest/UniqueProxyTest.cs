@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace _2DGameToolKitTest
@@ -37,13 +38,13 @@ namespace _2DGameToolKitTest
             DummyClassProxy.Open (dummyClass);
 
             DummyClassProxy.Close ();
-            Assert.ThrowsException<NUnit.Framework.AssertionException> (delegate { DummyClassProxy.Get (); });
+            Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Get (); });
         }
 
         [TestMethod]
         public void TestCloseBeforeOpen ()
         {
-            Assert.ThrowsException<NUnit.Framework.AssertionException> (delegate { DummyClassProxy.Close (); });
+            Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Close (); });
         }
 
         [TestMethod]
@@ -52,7 +53,7 @@ namespace _2DGameToolKitTest
             DummyClass dummyClass = new DummyClass ();
             DummyClassProxy.Open (dummyClass);
             Assert.AreEqual (dummyClass, DummyClassProxy.Get ());
-            Assert.ThrowsException<NUnit.Framework.AssertionException> (delegate { DummyClassProxy.Open (dummyClass); });
+            Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Open (dummyClass); });
         }
     }
 }
