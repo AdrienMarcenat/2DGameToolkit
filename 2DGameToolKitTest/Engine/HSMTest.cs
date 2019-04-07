@@ -77,7 +77,7 @@ namespace _2DGameToolKitTest
         {
             for(int i = 0; i < numberOfSteps; i++)
             {
-                m_HSM.UpdateLast ();
+                m_HSM.UpdateLast();
             }
         }
 

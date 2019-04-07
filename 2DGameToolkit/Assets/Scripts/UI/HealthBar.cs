@@ -4,12 +4,12 @@ public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Health m_Health;
 
-    private void Awake ()
+    private void OnEnable ()
     {
         this.RegisterAsListener (transform.parent.name, typeof (DamageGameEvent));
     }
 
-    private void OnDestroy ()
+    private void OnDisable ()
     {
         this.UnregisterAsListener (transform.parent.name);
     }

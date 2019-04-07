@@ -6,14 +6,14 @@ public class PlayerHealthBar : MonoBehaviour
     private Health m_Health;
     private Image m_Image;
 
-    private void Awake ()
+    private void OnEnable ()
     {
         m_Image = GetComponent<Image> ();
         m_Health = GameObject.FindGameObjectWithTag ("Player").GetComponent<Health> ();
         this.RegisterAsListener ("Player", typeof (DamageGameEvent));
     }
 
-    private void OnDestroy ()
+    private void OnDisable ()
     {
         this.UnregisterAsListener ("Player");
     }

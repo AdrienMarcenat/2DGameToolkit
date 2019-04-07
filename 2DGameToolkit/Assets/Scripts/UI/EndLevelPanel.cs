@@ -1,28 +1,23 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class EndLevelPanel : MonoBehaviour
 {
     [SerializeField] GameObject m_EndLevelPanel;
 
-    void Start ()
+    void Awake ()
     {
         m_EndLevelPanel.SetActive (false);
+        this.RegisterAsListener("Level", typeof(EndLevelGameEvent));
     }
 
-    void OnEnable ()
+    void OnDestroy ()
     {
-        //GameFlowEndLevelState.EndLevel += EndLevel;
+        this.UnregisterAsListener("Level");
     }
 
-    void OnDisable ()
+    void OnEvent (EndLevelGameEvent endLevelEvent)
     {
-        //GameFlowEndLevelState.EndLevel -= EndLevel;
-    }
-
-    void EndLevel (bool pause)
-    {
-        m_EndLevelPanel.SetActive (pause);
+        m_EndLevelPanel.SetActive (true);
     }
 }
 

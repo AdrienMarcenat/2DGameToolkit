@@ -9,7 +9,6 @@ public class LockBehaviour : MonoBehaviour
     private Camera2D m_Camera2D;
     private bool m_IsLocked = false;
 
-
     private void Awake ()
     {
         m_Camera2D = GameObject.Find ("MainCamera").GetComponent<Camera2D> ();

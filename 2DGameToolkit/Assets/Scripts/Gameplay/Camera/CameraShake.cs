@@ -9,12 +9,12 @@ public class CameraShake : MonoBehaviour
 
     private float m_ShakeTimer = 0;
 
-    private void Awake ()
+    private void OnEnable ()
     {
         this.RegisterAsListener ("Player", typeof (DamageGameEvent));
     }
 
-    private void OnDestroy ()
+    private void OnDisable ()
     {
         this.UnregisterAsListener ("Player");
     }
@@ -39,5 +39,4 @@ public class CameraShake : MonoBehaviour
         }
         transform.localPosition = new Vector3 (transform.localPosition.x, originalY, transform.localPosition.z);
     }
-
 }

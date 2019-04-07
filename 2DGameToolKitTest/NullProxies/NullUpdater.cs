@@ -8,7 +8,7 @@ namespace _2DGameToolKitTest
             return false;
         }
 
-        void IUpdater.Register(object objectToUpdate, params EUpdatePass[] updatePassList)
+        void IUpdater.Register(object objectToUpdate, bool isPausable, params EUpdatePass[] updatePassList)
         { }
 
         void IUpdater.SetPause(bool pause)

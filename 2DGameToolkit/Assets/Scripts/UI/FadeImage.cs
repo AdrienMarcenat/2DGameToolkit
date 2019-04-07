@@ -7,14 +7,14 @@ public class FadeImage : MonoBehaviour
     private Image m_FadeInOutImage;
     [SerializeField] float m_FadeSpeed;
 
-    void Awake ()
+    void OnEnable ()
     {
         m_FadeInOutImage = GetComponent<Image> ();
         this.RegisterAsListener ("Game", typeof (LevelEvent));
         StartCoroutine (FadeIn ());
     }
 
-    private void OnDestroy ()
+    void OnDisable ()
     {
         this.UnregisterAsListener ("Game");
     }

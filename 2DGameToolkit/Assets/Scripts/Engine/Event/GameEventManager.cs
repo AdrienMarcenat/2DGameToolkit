@@ -9,7 +9,7 @@ public class GameEventManager : IGameEventManager
 
     public void OnEngineStart ()
     {
-        this.RegisterToUpdate (EUpdatePass.First);
+        this.RegisterToUpdate (false, EUpdatePass.First);
     }
     public void OnEngineStop()
     {

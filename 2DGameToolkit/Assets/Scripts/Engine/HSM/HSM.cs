@@ -27,14 +27,12 @@ public class HSM
     public void Start (StateID firstStateID)
     {
         PushState (firstStateID);
-        UpdaterProxy.Get ().Register (this, EUpdatePass.Last);
         DumpStack ();
     }
 
     public void Stop ()
     {
         DumpStack ();
-        UpdaterProxy.Get ().Unregister (this, EUpdatePass.Last);
         ClearStack ();
         m_TransitionQueue.Clear ();
     }

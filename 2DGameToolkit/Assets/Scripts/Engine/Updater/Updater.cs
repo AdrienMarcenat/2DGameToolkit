@@ -16,46 +16,61 @@ public enum EUpdatePass
 
 public class Updater : IUpdater
 {
-    List<AnyObject>[] m_ObjectListPerPass = new List<AnyObject>[(int)EUpdatePass.Count];
+    List<ObjectToUpdate>[] m_ObjectListPerPass = new List<ObjectToUpdate>[(int)EUpdatePass.Count];
     private bool m_UpdateGuard = false;
     private bool m_IsPaused = false;
+
+    struct ObjectToUpdate
+    {
+        public readonly AnyObject m_ObjectToUpdate;
+        public readonly bool m_IsPausable;
+
+        public ObjectToUpdate(AnyObject objectToUpdate, bool isPausable = true)
+        {
+            this.m_ObjectToUpdate = objectToUpdate;
+            this.m_IsPausable = isPausable;
+        }
+        public override bool Equals(object r)
+        {
+            return this.m_ObjectToUpdate == ((ObjectToUpdate)r).m_ObjectToUpdate;
+        }
+    }
 
     public Updater()
     {
         for (int i = 0; i < (int)EUpdatePass.Count; i++)
         {
-            m_ObjectListPerPass[i] = new List<AnyObject> ();
+            m_ObjectListPerPass[i] = new List<ObjectToUpdate> ();
         }
     }
 
     public void Update ()
     {
-        /*if (m_IsPaused)
-        {
-            return;
-        }*/
-
         m_UpdateGuard = true;
         for (int i = 0; i < (int)EUpdatePass.Count; i++)
         {
             EUpdatePass pass = (EUpdatePass)i;
-            foreach (AnyObject objectToUpdate in m_ObjectListPerPass[(int)pass])
+            foreach (ObjectToUpdate objectToUpdate in m_ObjectListPerPass[(int)pass])
             {
-                ReflectionHelper.CallMethod ("Update" + pass.ToString (), objectToUpdate);
+                if (!m_IsPaused || !objectToUpdate.m_IsPausable)
+                {
+                    ReflectionHelper.CallMethod("Update" + pass.ToString(), objectToUpdate.m_ObjectToUpdate);
+                }
             }
         }
         m_UpdateGuard = false;
     }
 
-    public void Register (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
+    public void Register (AnyObject objectToUpdate, bool isPausable, params EUpdatePass[] updatePassList)
     {
         Assert.IsFalse (m_UpdateGuard, "Cannot register an object to update while updating !");
+        ObjectToUpdate newEntry = new ObjectToUpdate(objectToUpdate, isPausable);
         foreach (EUpdatePass pass in updatePassList)
         {
             Assert.IsTrue (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
-            if (!m_ObjectListPerPass[(int)pass].Contains (objectToUpdate))
+            if (!m_ObjectListPerPass[(int)pass].Contains (newEntry))
             {
-                m_ObjectListPerPass[(int)pass].Add (objectToUpdate);
+                m_ObjectListPerPass[(int)pass].Add (newEntry);
             }
         }
     }
@@ -63,10 +78,11 @@ public class Updater : IUpdater
     public void Unregister (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
     {
         Assert.IsFalse (m_UpdateGuard, "Cannot unregister an object to update while updating !");
+        ObjectToUpdate entryToRemove = new ObjectToUpdate(objectToUpdate);
         foreach (EUpdatePass pass in updatePassList)
         {
             Assert.IsTrue (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
-            m_ObjectListPerPass[(int)pass].Remove (objectToUpdate);
+            m_ObjectListPerPass[(int)pass].Remove (entryToRemove);
         }
     }
 

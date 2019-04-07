@@ -31,4 +31,15 @@ public class GameFlowHSM : HSM
         )
     {
     }
+    public void StartFlow()
+    {
+        Start(typeof(GameFlowMenuState));
+        this.RegisterToUpdate(false, EUpdatePass.Last);
+    }
+
+    public void StopFlow()
+    {
+        this.UnregisterToUpdate(EUpdatePass.Last);
+        Stop();
+    }
 }

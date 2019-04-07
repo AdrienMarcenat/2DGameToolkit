@@ -67,7 +67,7 @@ public class World : MonoBehaviour
 
     void OnEngineStart()
     {
-        m_GameFlowHSM.Start(typeof(GameFlowMenuState));
+        m_GameFlowHSM.StartFlow();
         m_InputManager.OnEngineStart();
         m_GameEventManager.OnEngineStart();
     }
@@ -76,7 +76,7 @@ public class World : MonoBehaviour
     {
         m_GameEventManager.OnEngineStop();
         m_InputManager.OnEngineStop();
-        m_GameFlowHSM.Stop();
+        m_GameFlowHSM.StopFlow();
     }
 
     void Update ()

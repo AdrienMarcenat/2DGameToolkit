@@ -13,9 +13,13 @@ public static class Extension
         GameEventManagerProxy.Get ().Unregister (objectToNotify, tag);
     }
 
-    public static void RegisterToUpdate (this System.Object objectToNotify, params EUpdatePass[] updatePassList)
+    public static void RegisterToUpdate (this System.Object objectToNotify, bool isPausable, params EUpdatePass[] updatePassList)
     {
-        UpdaterProxy.Get ().Register (objectToNotify, updatePassList);
+        UpdaterProxy.Get ().Register (objectToNotify, isPausable, updatePassList);
+    }
+    public static void RegisterToUpdate(this System.Object objectToNotify, params EUpdatePass[] updatePassList)
+    {
+        UpdaterProxy.Get().Register(objectToNotify, false, updatePassList);
     }
 
     public static void UnregisterToUpdate (this System.Object objectToNotify, params EUpdatePass[] updatePassList)
