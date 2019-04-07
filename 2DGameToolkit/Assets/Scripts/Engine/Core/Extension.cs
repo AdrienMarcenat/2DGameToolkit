@@ -40,6 +40,10 @@ public static class Extension
 
     public static void DebugLog (this System.Object caller, System.Object message)
     {
-        LoggerProxy.Get ().Log (message);
+        LoggerProxy.Get ().Log ("[" + caller.ToString() + "]" + message);
+    }
+    public static void DebugWarning(this System.Object caller, System.Object message)
+    {
+        LoggerProxy.Get().Warning("[" + caller.ToString() + "]" + message);
     }
 }

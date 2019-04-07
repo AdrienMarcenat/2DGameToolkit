@@ -7,7 +7,7 @@ namespace _2DGameToolKitTest
     [TestClass]
     public class UpdaterTest
     {
-        private Updater m_Updater;
+        private readonly Updater m_Updater = new Updater();
 
         class DummyAILogic
         {
@@ -33,14 +33,13 @@ namespace _2DGameToolKitTest
         [TestInitialize]
         public void TestInitialize ()
         {
-            m_Updater = new Updater ();
             UpdaterProxy.Open (m_Updater);
         }
 
         [TestCleanup]
         public void TestCleanup ()
         {
-            UpdaterProxy.Close ();
+            UpdaterProxy.Close (m_Updater);
         }
 
         [TestMethod]

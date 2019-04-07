@@ -9,7 +9,7 @@ public class RessourceManager
         GameObject prefab = (GameObject)Resources.Load ("Prefabs/" + name, typeof (GameObject));
         if (!prefab)
         {
-            Debug.LogWarning ("Prefab " + name + " could not be loaded");
+            LoggerProxy.Get().Warning("Prefab " + name + " could not be loaded");
         }
         return prefab;
     }
@@ -19,7 +19,7 @@ public class RessourceManager
         Sprite[] sprite = Resources.LoadAll<Sprite> ("Sprites/" + name);
         if (index >= sprite.Length)
         {
-            Debug.LogWarning ("Sprite " + name + " could not be loaded");
+            LoggerProxy.Get().Warning("Sprite " + name + " could not be loaded");
         }
         return sprite[index];
     }

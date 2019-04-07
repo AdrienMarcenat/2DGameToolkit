@@ -14,14 +14,14 @@ public enum EUpdatePass
     Count
 }
 
-public class Updater
+public class Updater : IUpdater
 {
-    List<AnyObject>[] m_ObjectListPerPass;
+    List<AnyObject>[] m_ObjectListPerPass = new List<AnyObject>[(int)EUpdatePass.Count];
     private bool m_UpdateGuard = false;
+    private bool m_IsPaused = false;
 
-    public Updater ()
+    public Updater()
     {
-        m_ObjectListPerPass = new List<AnyObject>[(int)EUpdatePass.Count];
         for (int i = 0; i < (int)EUpdatePass.Count; i++)
         {
             m_ObjectListPerPass[i] = new List<AnyObject> ();
@@ -49,7 +49,7 @@ public class Updater
 
     public void Register (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
     {
-        Assert.IsFalse (m_UpdateGuard, "Cannot register a listener while updating !");
+        Assert.IsFalse (m_UpdateGuard, "Cannot register an object to update while updating !");
         foreach (EUpdatePass pass in updatePassList)
         {
             Assert.IsTrue (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
@@ -62,7 +62,7 @@ public class Updater
 
     public void Unregister (AnyObject objectToUpdate, params EUpdatePass[] updatePassList)
     {
-        Assert.IsFalse (m_UpdateGuard, "Cannot unregister a listener while updating !");
+        Assert.IsFalse (m_UpdateGuard, "Cannot unregister an object to update while updating !");
         foreach (EUpdatePass pass in updatePassList)
         {
             Assert.IsTrue (pass != EUpdatePass.Count, "Invalid Update Pass : " + pass.ToString ());
@@ -79,9 +79,4 @@ public class Updater
     {
         return m_IsPaused;
     }
-
-    private bool m_IsPaused = false;
 }
-
-public class UpdaterProxy : UniqueProxy<Updater>
-{}

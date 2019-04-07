@@ -10,38 +10,19 @@ public enum EInputState
     Held,
 }
 
-public class PlayerInputGameEvent : GameEvent
+public class InputManager : IInputManager
 {
-    public PlayerInputGameEvent (string input, EInputState state) : base ("Player", EProtocol.Instant)
-    {
-        m_Input = input;
-        m_State = state;
-    }
+    private Dictionary<string, KeyCode> m_KeyCodes = new Dictionary<string, KeyCode>();
+    private const string m_InputFileName = "Datas/Input.txt";
 
-    public string GetInput ()
-    {
-        return m_Input;
-    }
-
-    public EInputState GetInputState ()
-    {
-        return m_State;
-    }
-
-    private string m_Input;
-    private EInputState m_State;
-}
-
-public class InputManager
-{
-    private Dictionary<string, KeyCode> m_KeyCodes;
-    private static string ms_InputFileName = "Datas/Input.txt";
-
-    public InputManager ()
+    public void OnEngineStart ()
     {
         this.RegisterToUpdate (EUpdatePass.BeforeAI);
-        m_KeyCodes = new Dictionary<string, KeyCode> ();
-        FillKeyCodes (ms_InputFileName);
+        FillKeyCodes (m_InputFileName);
+    }
+    public void OnEngineStop()
+    {
+        this.UnregisterToUpdate(EUpdatePass.BeforeAI);
     }
 
     public void UpdateBeforeAI()
@@ -110,8 +91,4 @@ public class InputManager
             m_KeyCodes.Add (inputName, inputKeyCode);
         }
     }
-}
-
-public class InputManagerProxy : UniqueProxy<InputManager>
-{
 }

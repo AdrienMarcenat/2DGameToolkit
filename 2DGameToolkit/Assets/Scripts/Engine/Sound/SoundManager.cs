@@ -1,20 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class SoundManager
+public class SoundManager : ISoundManager
 {
     [SerializeField] AudioSource m_EfxSource;
     [SerializeField] AudioSource m_MusicSource;
-
-    public SoundManager ()
-    {
-        SoundManagerProxy.Open (this);
-    }
-
-    ~SoundManager ()
-    {
-        SoundManagerProxy.Close ();
-    }
 
     public void PlaySingle (AudioClip clip)
     {
@@ -37,6 +26,3 @@ public class SoundManager
         }
     }
 }
-
-public class SoundManagerProxy : UniqueProxy<SoundManager>
-{}

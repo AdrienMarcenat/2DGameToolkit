@@ -67,9 +67,6 @@ namespace _2DGameToolKitTest
                )
             { }
         }
-        
-        private DummyHSM m_HSM;
-        private Dictionary<System.Type, HSMState> m_States;
 
         private bool CheckIsInStack<T>() where T : DummyStateBase
         {
@@ -84,20 +81,24 @@ namespace _2DGameToolKitTest
             }
         }
 
+        private Dictionary<System.Type, HSMState> m_States;
+        private readonly DummyHSM m_HSM = new DummyHSM();
+        readonly NullUpdater m_Updater = new NullUpdater();
+        readonly NullLogger m_Logger = new NullLogger();
+
         [TestInitialize]
         public void TestInitialize ()
         {
-            UpdaterProxy.Open (new Updater());
-            LoggerProxy.Open (new NullLogger ());
-            m_HSM = new DummyHSM ();
+            UpdaterProxy.Open (m_Updater);
+            LoggerProxy.Open (m_Logger);
             m_States = m_HSM.GetStates ();
         }
 
         [TestCleanup]
         public void TestCleanup ()
         {
-            LoggerProxy.Close ();
-            UpdaterProxy.Close ();
+            LoggerProxy.Close (m_Logger);
+            UpdaterProxy.Close (m_Updater);
         }
         
         [TestMethod]

@@ -30,6 +30,5 @@ public class GameFlowHSM : HSM
               , new GameFlowGameOverState ()
         )
     {
-        Start (typeof (GameFlowMenuState));
     }
 }

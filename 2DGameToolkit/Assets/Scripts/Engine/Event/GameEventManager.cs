@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine.Assertions;
 
-public class GameEventManager
+public class GameEventManager : IGameEventManager
 {
-    private Dictionary<string, ListenerNotifier> m_Notifiers;
-    private Queue<GameEvent> m_GameEventQueue;
+    private Dictionary<string, ListenerNotifier> m_Notifiers = new Dictionary<string, ListenerNotifier>();
+    private Queue<GameEvent> m_GameEventQueue = new Queue<GameEvent>();
     private bool m_DispatchGuard = false;
 
-    public GameEventManager ()
+    public void OnEngineStart ()
     {
-        m_Notifiers = new Dictionary<string, ListenerNotifier> ();
-        m_GameEventQueue = new Queue<GameEvent> ();
-        UpdaterProxy.Get ().Register (this, EUpdatePass.First);
+        this.RegisterToUpdate (EUpdatePass.First);
+    }
+    public void OnEngineStop()
+    {
+        this.UnregisterToUpdate(EUpdatePass.First);
     }
 
     public void Register (System.Object objectToNotify, string tag, params System.Type[] GameEventTypes)
@@ -84,6 +86,3 @@ public class GameEventManager
         }
     }
 }
-
-public class GameEventManagerProxy : UniqueProxy<GameEventManager>
-{ }

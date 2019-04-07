@@ -13,47 +13,54 @@ namespace _2DGameToolKitTest
         class DummyClassProxy : UniqueProxy<DummyClass>
         { }
 
+        private readonly DummyClass m_Dummy = new DummyClass();
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            DummyClassProxy.Open(m_Dummy);
+        }
+
         [TestCleanup]
         public void TestCleanup ()
         {
             if (DummyClassProxy.IsValid ())
             {
-                DummyClassProxy.Close ();
+                DummyClassProxy.Close (m_Dummy);
             }
         }
 
         [TestMethod]
         public void TestOpen ()
         {
-            DummyClass dummyClass = new DummyClass ();
-            DummyClassProxy.Open (dummyClass);
             Assert.IsTrue (DummyClassProxy.IsValid ());
-            Assert.AreEqual (dummyClass, DummyClassProxy.Get ());
+            Assert.AreEqual (m_Dummy, DummyClassProxy.Get ());
         }
 
         [TestMethod]
         public void TestCloseAfterOpen ()
         {
-            DummyClass dummyClass = new DummyClass ();
-            DummyClassProxy.Open (dummyClass);
-
-            DummyClassProxy.Close ();
+            DummyClassProxy.Close (m_Dummy);
             Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Get (); });
         }
 
         [TestMethod]
         public void TestCloseBeforeOpen ()
         {
-            Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Close (); });
+            DummyClassProxy.Close(m_Dummy);
+            Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Close (m_Dummy); });
         }
 
         [TestMethod]
         public void TestDoubleOpen ()
         {
-            DummyClass dummyClass = new DummyClass ();
-            DummyClassProxy.Open (dummyClass);
-            Assert.AreEqual (dummyClass, DummyClassProxy.Get ());
-            Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Open (dummyClass); });
+            Assert.ThrowsException<SecurityException> (delegate { DummyClassProxy.Open (m_Dummy); });
+        }
+
+        public void TestCloseWithWrongProxy()
+        {
+            DummyClass otherDummy = new DummyClass();
+            Assert.ThrowsException<SecurityException>(delegate { DummyClassProxy.Close(otherDummy); });
         }
     }
 }

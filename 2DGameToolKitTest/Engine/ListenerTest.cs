@@ -45,24 +45,21 @@ namespace _2DGameToolKitTest
             public bool m_DummyEventReceived;
         }
         
-        private GameEventManager m_EventManager;
-        private Updater m_Updater;
+        private GameEventManager m_EventManager = new GameEventManager();
+        private readonly NullUpdater m_Updater = new NullUpdater();
 
         [TestInitialize]
         public void TestInitialize ()
         {
-            m_Updater = new Updater ();
-            UpdaterProxy.Open (m_Updater);
-            m_EventManager = new GameEventManager ();
-
+            UpdaterProxy.Open(m_Updater);
             GameEventManagerProxy.Open (m_EventManager);
         }
 
         [TestCleanup]
         public void TestCleanup ()
         {
-            GameEventManagerProxy.Close ();
-            UpdaterProxy.Close ();
+            GameEventManagerProxy.Close (m_EventManager);
+            UpdaterProxy.Close (m_Updater);
         }
         
         [TestMethod]

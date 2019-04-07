@@ -8,9 +8,10 @@ public class UniqueProxy<T> where T : class
         ms_Instance = instance;
     }
 
-    public static void Close ()
+    public static void Close (T instance)
     {
         Assert.IsTrue (ms_Instance != null, "Proxy wasn't set");
+        Assert.IsTrue(ms_Instance == instance, "Different instances for opening/closing");
         ms_Instance = null;
     }
 

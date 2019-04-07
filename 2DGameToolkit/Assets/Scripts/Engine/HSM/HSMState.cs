@@ -29,7 +29,7 @@ public struct HSMTransition
 public abstract class HSMState
 {
     private HSMTransition m_NextTransition;
-    private StateID m_ID;
+    private readonly StateID m_ID;
 
     public HSMState()
     {

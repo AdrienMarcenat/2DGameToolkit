@@ -3,11 +3,11 @@ using UnityEngine.UI;
 
 public class InputConfigurationMenu : MonoBehaviour
 {
-    [SerializeField] private GameObject m_ConfigurationButton;
+    [SerializeField] private readonly GameObject m_ConfigurationButton;
 
     void Start ()
     {
-        InputManager inputManager = InputManagerProxy.Get ();
+        IInputManager inputManager = InputManagerProxy.Get ();
         int buttonCount = 0;
         foreach (string inputName in inputManager.GetInputs ().Keys)
         {
