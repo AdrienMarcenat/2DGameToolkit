@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 
 public class TestNodeEditor : NodeBasedEditor<TestNodeEditor, Node, Connection>
     , INodeEditor<Node, Connection>
@@ -13,13 +12,37 @@ public class TestNodeEditor : NodeBasedEditor<TestNodeEditor, Node, Connection>
         window.titleContent = new GUIContent("Node Based Editor test");
     }
 
-    public virtual Node CreateNode(Node node)
+    public virtual Node CreateNode(Vector2 position
+        , GUIStyle nodeStyle
+        , GUIStyle selectedStyle
+        , GUIStyle inPointStyle
+        , GUIStyle outPointStyle
+        , Action<ConnectionPoint> OnClickInPoint
+        , Action<ConnectionPoint> OnClickOutPoint
+        , Action<Node> OnClickRemoveNode
+        , string inPointID
+        , string outPointID)
     {
-        return node;
+        return new Node(position, nodeStyle, selectedStyle, inPointStyle, outPointStyle,
+            OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, inPointID, outPointID);
     }
+    public virtual Node DeserializeNode(Node nodeDeserialized)
+    {
+        return new Node(nodeDeserialized.m_Rect.position,
+                m_NodeStyle,
+                m_SelectedNodeStyle,
+                m_InPointStyle,
+                m_OutPointStyle,
+                OnClickInPoint,
+                OnClickOutPoint,
+                OnClickRemoveNode,
+                nodeDeserialized.m_InPoint.m_Id,
+                nodeDeserialized.m_OutPoint.m_Id
+                );
+    }
+
     public virtual Connection CreateConnection(Connection connection)
     {
         return connection;
     }
-    public virtual string GetSavePath() { return "Assets/StreamingAssets/Test.xml"; }
 }

@@ -10,7 +10,7 @@ public class Node
     public ConnectionPoint m_InPoint;
     public ConnectionPoint m_OutPoint;
 
-    [XmlIgnore] readonly private string m_Title;
+    [XmlIgnore] private readonly string m_Title;
     [XmlIgnore] private bool m_IsDragged;
     [XmlIgnore] private bool m_IsSelected;
 
@@ -18,29 +18,17 @@ public class Node
     [XmlIgnore] private readonly GUIStyle m_DefaultNodeStyle;
     [XmlIgnore] private readonly GUIStyle m_SelectedNodeStyle;
 
-    [XmlIgnore] private Action<Node> m_OnRemoveNode;
+    [XmlIgnore] private readonly Action<Node> m_OnRemoveNode;
 
     // parameterless constructo for xml serialization
     public Node()
     {
     }
 
-    public Node(Vector2 position, float width, float height, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle inPointStyle, GUIStyle outPointStyle, Action<ConnectionPoint> OnClickInPoint,
-        Action<ConnectionPoint> OnClickOutPoint, Action<Node> OnClickRemoveNode)
-    {
-        m_Rect = new Rect(position.x, position.y, width, height);
-        m_Style = nodeStyle;
-        m_InPoint = new ConnectionPoint(this, EConnectionPointType.In, inPointStyle, OnClickInPoint);
-        m_OutPoint = new ConnectionPoint(this, EConnectionPointType.Out, outPointStyle, OnClickOutPoint);
-        m_DefaultNodeStyle = nodeStyle;
-        m_SelectedNodeStyle = selectedStyle;
-        m_OnRemoveNode = OnClickRemoveNode;
-    }
-
-    public Node(Vector2 position, float width, float height, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle inPointStyle, GUIStyle outPointStyle, Action<ConnectionPoint> OnClickInPoint,
+    public Node(Vector2 position, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle inPointStyle, GUIStyle outPointStyle, Action<ConnectionPoint> OnClickInPoint,
         Action<ConnectionPoint> OnClickOutPoint, Action<Node> OnClickRemoveNode, string inPointID, string outPointID)
     {
-        m_Rect = new Rect(position.x, position.y, width, height);
+        m_Rect = new Rect(position.x, position.y, GetWidth(), GetHeight());
         m_Style = nodeStyle;
         m_InPoint = new ConnectionPoint(this, EConnectionPointType.In, inPointStyle, OnClickInPoint, inPointID);
         m_OutPoint = new ConnectionPoint(this, EConnectionPointType.Out, outPointStyle, OnClickOutPoint, outPointID);
@@ -49,19 +37,28 @@ public class Node
         m_OnRemoveNode = OnClickRemoveNode;
     }
 
+    protected virtual float GetWidth()
+    {
+        return 200f;
+    }
+    protected virtual float GetHeight()
+    {
+        return 50f;
+    }
+
     public void Drag(Vector2 delta)
     {
         m_Rect.position += delta;
     }
 
-    public void Draw()
+    public virtual void Draw()
     {
         m_InPoint.Draw();
         m_OutPoint.Draw();
         GUI.Box(m_Rect, m_Title, m_Style);
     }
 
-    public bool ProcessEvents(Event e)
+    public virtual bool ProcessEvents(Event e)
     {
         switch (e.type)
         {

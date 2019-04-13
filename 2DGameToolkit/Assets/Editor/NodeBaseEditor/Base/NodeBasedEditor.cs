@@ -2,12 +2,22 @@
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public interface INodeEditor<NodeType, ConnectionType>
 {
-    NodeType CreateNode(Node node);
+    NodeType CreateNode(Vector2 position
+        , GUIStyle nodeStyle
+        , GUIStyle selectedStyle
+        , GUIStyle inPointStyle
+        , GUIStyle outPointStyle
+        , Action<ConnectionPoint> OnClickInPoint
+        , Action<ConnectionPoint> OnClickOutPoint
+        , Action<Node> OnClickRemoveNode
+        , string inPointID = null
+        , string outPointID = null);
     ConnectionType CreateConnection(Connection connection);
-    string GetSavePath();
+    NodeType DeserializeNode(NodeType node);
 }
 
 public class Graph<NodeType, ConnectionType>
@@ -44,6 +54,7 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
     private Rect m_MenuBar;
 
     private Editor GetAsFinalType() { return (Editor)this; }
+
     private void OnEnable()
     {
         m_Graph = new Graph<NodeType, ConnectionType>();
@@ -238,9 +249,7 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
 
     private void OnClickAddNode(Vector2 mousePosition)
     {
-        Node baseNode = new Node(mousePosition
-            , 200
-            , 50
+        m_Graph.m_Nodes.Add(GetAsFinalType().CreateNode(mousePosition
             , m_NodeStyle
             , m_SelectedNodeStyle
             , m_InPointStyle
@@ -248,8 +257,7 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
             , OnClickInPoint
             , OnClickOutPoint
             , OnClickRemoveNode
-        );
-        m_Graph.m_Nodes.Add(GetAsFinalType().CreateNode(baseNode));
+        ));
     }
 
     private void OnClickPoint()
@@ -317,35 +325,51 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
         m_SelectedOutPoint = null;
     }
 
-    private void Save()
+    private string OpenFileDialogue()
     {
-        XMLSerializerHelper.Serialize(m_Graph, GetAsFinalType().GetSavePath());
+        return UnityEditor.EditorUtility.OpenFilePanel("Choose a save location"
+            , "EditorFiles/"
+            , "xml"
+        );
+    }
+    private string SaveFilePanel()
+    {
+        return UnityEditor.EditorUtility.SaveFilePanel("Choose a save location"
+            , "EditorFiles/"
+            , "dialogue"
+            , "xml"
+        );
     }
 
-    private void Load()
+    private void Save()
     {
-        Graph<NodeType, ConnectionType> graphDeserialized = XMLSerializerHelper.Deserialize<Graph<NodeType, ConnectionType>>(GetAsFinalType().GetSavePath());
+        string savePath = SaveFilePanel();
+        if (savePath != "")
+        {
+            Save(savePath);
+        }
+    }
+
+    protected virtual void Save(string savePath)
+    {
+        XMLSerializerHelper.Serialize(m_Graph, savePath);
+    }
+
+    protected virtual void Load()
+    {
+        string savePath = OpenFileDialogue();
+        if(savePath == "")
+        {
+            return;
+        }
+        Graph<NodeType, ConnectionType> graphDeserialized = XMLSerializerHelper.Deserialize<Graph<NodeType, ConnectionType>>(savePath);
         
         m_Graph.m_Nodes = new List<NodeType>();
         m_Graph.m_Connections = new List<ConnectionType>();
 
         foreach (var nodeDeserialized in graphDeserialized.m_Nodes)
         {
-            Node nodeBase = new Node(
-                nodeDeserialized.m_Rect.position,
-                nodeDeserialized.m_Rect.width,
-                nodeDeserialized.m_Rect.height,
-                m_NodeStyle,
-                m_SelectedNodeStyle,
-                m_InPointStyle,
-                m_OutPointStyle,
-                OnClickInPoint,
-                OnClickOutPoint,
-                OnClickRemoveNode,
-                nodeDeserialized.m_InPoint.m_Id,
-                nodeDeserialized.m_OutPoint.m_Id
-                );
-            m_Graph.m_Nodes.Add(GetAsFinalType().CreateNode(nodeBase));
+            m_Graph.m_Nodes.Add(GetAsFinalType().DeserializeNode(nodeDeserialized));
         }
 
         foreach (var connectionDeserialized in graphDeserialized.m_Connections)

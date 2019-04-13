@@ -1,25 +1,18 @@
 ﻿using System.Collections.Generic;
 
-[System.Serializable]
-public class Dialogue
+namespace Dialogue
 {
-    public struct Sentence
+    public class Dialogue
     {
-        public string m_Name;
-        public string m_Sentence;
+        public List<Node> m_Nodes = new List<Node>();
 
-        public Sentence (string name, string sentence)
+        public Dialogue()
+        { }
+
+        public void AddNode(Node node)
         {
-            m_Name = name;
-            m_Sentence = sentence;
+            m_Nodes.Add(node);
         }
-    }
-
-    public List<Sentence> m_Sentences;
-
-    public Dialogue ()
-    {
-        m_Sentences = new List<Sentence> ();
     }
 }
 
