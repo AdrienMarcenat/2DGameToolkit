@@ -60,11 +60,11 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
         m_Graph = new Graph<NodeType, ConnectionType>();
 
         m_NodeStyle = new GUIStyle();
-        m_NodeStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/node1.png") as Texture2D;
+        m_NodeStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/node2.png") as Texture2D;
         m_NodeStyle.border = new RectOffset(12, 12, 12, 12);
 
         m_SelectedNodeStyle = new GUIStyle();
-        m_SelectedNodeStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/node1 on.png") as Texture2D;
+        m_SelectedNodeStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/node2 on.png") as Texture2D;
         m_SelectedNodeStyle.border = new RectOffset(12, 12, 12, 12);
 
         m_InPointStyle = new GUIStyle();
@@ -148,7 +148,10 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
     {
         foreach (NodeType node in m_Graph.m_Nodes)
         {
+            // Draw the contents inside the node body, automatically laidout.
+            GUILayout.BeginArea(node.m_Rect, m_NodeStyle);
             node.Draw();
+            GUILayout.EndArea();
         }
     }
 
@@ -200,9 +203,9 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
         if (m_SelectedInPoint != null && m_SelectedOutPoint == null)
         {
             Handles.DrawBezier(
-                m_SelectedInPoint.GetRect().center,
+                m_SelectedInPoint.GetGlobalCenter(),
                 e.mousePosition,
-                m_SelectedInPoint.GetRect().center + Vector2.left * 50f,
+                m_SelectedInPoint.GetGlobalCenter() + Vector2.left * 50f,
                 e.mousePosition - Vector2.left * 50f,
                 Color.white,
                 null,
@@ -215,9 +218,9 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
         if (m_SelectedOutPoint != null && m_SelectedInPoint == null)
         {
             Handles.DrawBezier(
-                m_SelectedOutPoint.GetRect().center,
+                m_SelectedOutPoint.GetGlobalCenter(),
                 e.mousePosition,
-                m_SelectedOutPoint.GetRect().center - Vector2.left * 50f,
+                m_SelectedOutPoint.GetGlobalCenter() - Vector2.left * 50f,
                 e.mousePosition + Vector2.left * 50f,
                 Color.white,
                 null,
@@ -311,12 +314,30 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
     private void OnClickRemoveConnection(Connection connection)
     {
         m_Graph.m_Connections.Remove((ConnectionType)connection);
+        string inID = connection.m_InPoint.GetNode().m_ID;
+        string outID = connection.m_OutPoint.GetNode().m_ID;
+        foreach (Node node in m_Graph.m_Nodes)
+        {
+            if(node.m_ID == inID || node.m_ID == outID)
+            {
+                node.OnConnectionRemove(connection);
+            }
+        }
     }
 
     private void CreateConnection()
     {
-        Connection connectionBase = new Connection(m_SelectedInPoint, m_SelectedOutPoint, OnClickRemoveConnection);
-        m_Graph.m_Connections.Add(GetAsFinalType().CreateConnection(connectionBase));
+        Connection connection = new Connection(m_SelectedInPoint, m_SelectedOutPoint, OnClickRemoveConnection);
+        m_Graph.m_Connections.Add(GetAsFinalType().CreateConnection(connection));
+        string inID = connection.m_InPoint.GetNode().m_ID;
+        string outID = connection.m_OutPoint.GetNode().m_ID;
+        foreach (Node node in m_Graph.m_Nodes)
+        {
+            if (node.m_ID == inID || node.m_ID == outID)
+            {
+                node.OnConnectionMade(connection);
+            }
+        }
     }
 
     private void ClearConnectionSelection()

@@ -39,7 +39,8 @@ public class DialogueNodeEditor : NodeBasedEditor<DialogueNodeEditor, DialogueNo
                 OnClickOutPoint,
                 OnClickRemoveNode,
                 nodeDeserialized.m_InPoint.m_Id,
-                nodeDeserialized.m_OutPoint.m_Id
+                nodeDeserialized.m_OutPoint.m_Id,
+                nodeDeserialized.m_ID
                 );
         node.m_Node.m_Name = nodeDeserialized.m_Node.m_Name;
         node.m_Node.m_Text = nodeDeserialized.m_Node.m_Text;

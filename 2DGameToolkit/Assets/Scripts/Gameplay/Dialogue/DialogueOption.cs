@@ -8,12 +8,12 @@ namespace Dialogue
     public class Option
     {
         public string m_Text;
-        public int m_DestinationNodeID;
+        public string m_DestinationNodeID;
 
         public Option()
         { }
 
-        public Option(string text, int destinationNodeID)
+        public Option(string text, string destinationNodeID)
         {
             m_Text = text;
             m_DestinationNodeID = destinationNodeID;

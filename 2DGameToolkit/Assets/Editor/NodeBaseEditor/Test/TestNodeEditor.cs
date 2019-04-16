@@ -24,7 +24,7 @@ public class TestNodeEditor : NodeBasedEditor<TestNodeEditor, Node, Connection>
         , string outPointID)
     {
         return new Node(position, nodeStyle, selectedStyle, inPointStyle, outPointStyle,
-            OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, inPointID, outPointID);
+            OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, inPointID, outPointID, false);
     }
     public virtual Node DeserializeNode(Node nodeDeserialized)
     {
@@ -37,7 +37,9 @@ public class TestNodeEditor : NodeBasedEditor<TestNodeEditor, Node, Connection>
                 OnClickOutPoint,
                 OnClickRemoveNode,
                 nodeDeserialized.m_InPoint.m_Id,
-                nodeDeserialized.m_OutPoint.m_Id
+                nodeDeserialized.m_OutPoint.m_Id,
+                false,
+                nodeDeserialized.m_ID
                 );
     }
 

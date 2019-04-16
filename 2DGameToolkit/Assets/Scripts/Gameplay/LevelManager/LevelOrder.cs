@@ -113,7 +113,7 @@ public class TalkLevelOrder : LevelOrder
 
     public override void ExecuteOrder ()
     {
-        DialogueManagerProxy.Get ().TriggerDialogue (m_Tag);
+        Dialogue.DialogueManagerProxy.Get ().TriggerDialogue (m_Tag);
     }
 }
 

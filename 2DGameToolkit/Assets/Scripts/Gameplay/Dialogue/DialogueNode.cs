@@ -7,9 +7,10 @@ namespace Dialogue
 {
     public class Node
     {
-        public int m_NodeID = -1;
+        public string m_ID = "";
         public string m_Name;
         public string m_Text;
+        public string m_NextNodeID = "";
         public List<Option> m_Options = new List<Option>();
 
         public Node()
@@ -24,6 +25,10 @@ namespace Dialogue
         public void AddOption(Option option)
         {
             m_Options.Add(option);
+        }
+        public void RemoveOption(Option option)
+        {
+            m_Options.Remove(option);
         }
     }
 }

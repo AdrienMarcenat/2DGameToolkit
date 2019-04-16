@@ -5,72 +5,85 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
+using UnityEngine.Assertions;
 
-public class DialogueManager : MonoBehaviour
+namespace Dialogue
 {
-    [SerializeField] private Text m_DialogeText;
-    [SerializeField] private Text m_NameText;
-    [SerializeField] private Animator m_Animator;
-
-    //private Queue<Dialogue.Sentence> m_Sentences;
-    private static string ms_DialogueDirectory = "/Dialogues/";
-
-    void Start ()
+    public class DialogueManager : MonoBehaviour, IDialogueManager
     {
-        //m_Sentences = new Queue<Dialogue.Sentence> ();
-        TriggerDialogue("bob.xml");
-    }
+        [SerializeField] private Text m_DialogeText;
+        [SerializeField] private Text m_NameText;
+        [SerializeField] private Animator m_Animator;
+        [SerializeField] private List<DialogueOptionButton> m_OptionButtons = new List<DialogueOptionButton>();
 
-    //public void StartDialogue (Dialogue dialogue)
-    //{
-    //    m_Animator.SetBool ("IsOpen", true);
-    //    m_Sentences.Clear ();
+        private static string ms_DialogueDirectory = "/Dialogues/";
 
-    //    foreach (Dialogue.Sentence sentence in dialogue.m_Sentences)
-    //    {
-    //        m_Sentences.Enqueue (sentence);
-    //    }
+        private Dialogue m_Dialogue;
 
-    //    DisplayNextSentence ();
-    //}
-
-    //public void DisplayNextSentence ()
-    //{
-    //    if (m_Sentences.Count == 0)
-    //    {
-    //        EndDialogue ();
-    //        return;
-    //    }
-    //    StopAllCoroutines ();
-    //    //Dialogue.Sentence sentence = m_Sentences.Dequeue ();
-    //    m_NameText.text = sentence.m_Name;
-    //    StartCoroutine (TypeSentence (sentence.m_Sentence));
-    //}
-
-    IEnumerator TypeSentence (string sentence)
-    {
-        m_DialogeText.text = "";
-        foreach (char letter in sentence.ToCharArray ())
+        void Start()
         {
-            m_DialogeText.text += letter;
-            yield return null;
+            TriggerDialogue("bob.xml");
+        }
+
+        private void StartDialogue ()
+        {
+            m_Animator.SetBool ("IsOpen", true);
+            Assert.IsTrue(m_Dialogue != null, "Cannot start a null dialogue !");
+            Assert.IsTrue(m_Dialogue.m_Nodes.Count != 0, "Cannot start an empty dialogue!");
+            DisplayNode(m_Dialogue.GetRootNodeID());
+        }
+
+        public void DisplayNode (string nodeID)
+        {
+            if (nodeID == "")
+            {
+                EndDialogue ();
+                return;
+            }
+            StopAllCoroutines ();
+            Node node = m_Dialogue.GetNode(nodeID);
+            m_NameText.text = node.m_Name;
+            m_DialogeText.text = "";
+            foreach(DialogueOptionButton optionButton in m_OptionButtons)
+            {
+                optionButton.Reset();
+            }
+            StartCoroutine (DisplayNodeRoutine(node));
+        }
+
+        IEnumerator DisplayNodeRoutine(Node node)
+        {
+            m_DialogeText.text = "";
+            foreach (char letter in node.m_Text.ToCharArray())
+            {
+                m_DialogeText.text += letter;
+                yield return null;
+            }
+            DisplayOptions(node.m_Options);
+        }
+
+        private void DisplayOptions(List<Option> options)
+        {
+            Assert.IsTrue(options.Count <= m_OptionButtons.Count, "too many options to display");
+            for(int i = 0; i < options.Count; i++)
+            {
+                m_OptionButtons[i].SetOption(options[i]);
+            }
+        }
+
+        public void EndDialogue()
+        {
+            m_Animator.SetBool("IsOpen", false);
+            m_Dialogue = null;
+            StopAllCoroutines();
+        }
+
+        public void TriggerDialogue(string tag)
+        {
+            string filename = Application.streamingAssetsPath + ms_DialogueDirectory + tag;
+            Dialogue dialogue = XMLSerializerHelper.Deserialize<Dialogue>(filename);
+            m_Dialogue = dialogue;
+            StartDialogue();
         }
     }
-
-    public void EndDialogue ()
-    {
-        m_Animator.SetBool ("IsOpen", false);
-    }
-
-    public void TriggerDialogue (string tag)
-    {
-        string filename = Application.streamingAssetsPath + ms_DialogueDirectory + tag;
-        Dialogue.Dialogue graphDeserialized = XMLSerializerHelper.Deserialize<Dialogue.Dialogue>(filename);
-        //StartDialogue(dialogue);
-    }
 }
-
-public class DialogueManagerProxy : UniqueProxy<DialogueManager>
-{
-}
-

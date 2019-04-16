@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Node
 {
+    public string m_ID = "";
     public Rect m_Rect;
 
     public ConnectionPoint m_InPoint;
@@ -20,21 +21,27 @@ public class Node
 
     [XmlIgnore] private readonly Action<Node> m_OnRemoveNode;
 
-    // parameterless constructo for xml serialization
+    // parameterless constructor for xml serialization
     public Node()
     {
     }
 
-    public Node(Vector2 position, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle inPointStyle, GUIStyle outPointStyle, Action<ConnectionPoint> OnClickInPoint,
-        Action<ConnectionPoint> OnClickOutPoint, Action<Node> OnClickRemoveNode, string inPointID, string outPointID)
+    public Node(Vector2 position, GUIStyle nodeStyle, GUIStyle selectedStyle
+        , GUIStyle inPointStyle, GUIStyle outPointStyle, Action<ConnectionPoint> OnClickInPoint,
+        Action<ConnectionPoint> OnClickOutPoint, Action<Node> OnClickRemoveNode
+        , string inPointID, string outPointID, bool isMultipleConnectionAllowed, string id = null)
     {
         m_Rect = new Rect(position.x, position.y, GetWidth(), GetHeight());
         m_Style = nodeStyle;
-        m_InPoint = new ConnectionPoint(this, EConnectionPointType.In, inPointStyle, OnClickInPoint, inPointID);
-        m_OutPoint = new ConnectionPoint(this, EConnectionPointType.Out, outPointStyle, OnClickOutPoint, outPointID);
+        float connectionPointOffset = m_Rect.height * 0.5f;
+        m_InPoint = new ConnectionPoint(this, EConnectionPointType.In, inPointStyle
+            , OnClickInPoint, connectionPointOffset, isMultipleConnectionAllowed, inPointID);
+        m_OutPoint = new ConnectionPoint(this, EConnectionPointType.Out, outPointStyle
+            , OnClickOutPoint, connectionPointOffset, isMultipleConnectionAllowed, outPointID);
         m_DefaultNodeStyle = nodeStyle;
         m_SelectedNodeStyle = selectedStyle;
         m_OnRemoveNode = OnClickRemoveNode;
+        m_ID = id ?? Guid.NewGuid().ToString();
     }
 
     protected virtual float GetWidth()
@@ -55,7 +62,6 @@ public class Node
     {
         m_InPoint.Draw();
         m_OutPoint.Draw();
-        GUI.Box(m_Rect, m_Title, m_Style);
     }
 
     public virtual bool ProcessEvents(Event e)
@@ -117,4 +123,7 @@ public class Node
             m_OnRemoveNode(this);
         }
     }
+
+    public virtual void OnConnectionMade(Connection connection) { }
+    public virtual void OnConnectionRemove(Connection connection) { }
 }
