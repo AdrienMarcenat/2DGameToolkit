@@ -13,17 +13,26 @@ namespace Dialogue
         [SerializeField] private Animator m_Animator;
         [SerializeField] private List<DialogueOptionButton> m_OptionButtons = new List<DialogueOptionButton>();
 
+        private bool m_IsInDialogue = false;
         private static string ms_DialogueDirectory = "/Dialogues/";
 
         private Dialogue m_Dialogue;
 
-        void Start()
+        void Awake()
         {
+            DialogueManagerProxy.Open (this);
             TriggerDialogue("bob");
+        }
+
+        void OnDestroy()
+        {
+            DialogueManagerProxy.Close (this);
         }
 
         private void StartDialogue ()
         {
+            new GameFlowEvent (EGameFlowAction.StartDialogue).Push ();
+            m_IsInDialogue = true;
             m_Animator.SetBool ("IsOpen", true);
             Assert.IsTrue(m_Dialogue != null, "Cannot start a null dialogue !");
             Assert.IsTrue(m_Dialogue.m_Nodes.Count != 0, "Cannot start an empty dialogue!");
@@ -70,13 +79,16 @@ namespace Dialogue
 
         public void EndDialogue()
         {
-            m_Animator.SetBool("IsOpen", false);
+            StopAllCoroutines ();
+            m_Animator.SetBool ("IsOpen", false);
+            m_IsInDialogue = false;
+            new GameFlowEvent (EGameFlowAction.EndDialogue).Push ();
             m_Dialogue = null;
-            StopAllCoroutines();
         }
 
         public void TriggerDialogue(string tag)
         {
+            Assert.IsFalse (m_IsInDialogue, "Already in dialogue, cannot start another one");
             string filename = Application.streamingAssetsPath + ms_DialogueDirectory + tag + ".xml";
             Dialogue dialogue = XMLSerializerHelper.Deserialize<Dialogue>(filename);
             m_Dialogue = dialogue;
