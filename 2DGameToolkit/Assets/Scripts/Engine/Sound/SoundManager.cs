@@ -2,8 +2,14 @@
 
 public class SoundManager : ISoundManager
 {
-    [SerializeField] AudioSource m_EfxSource;
-    [SerializeField] AudioSource m_MusicSource;
+    private readonly AudioSource m_EfxSource;
+    private readonly AudioSource m_MusicSource;
+
+    public SoundManager (AudioSource efxSource, AudioSource musicSource)
+    {
+        m_EfxSource = efxSource;
+        m_MusicSource = musicSource;
+    }
 
     public void PlaySingle (AudioClip clip)
     {

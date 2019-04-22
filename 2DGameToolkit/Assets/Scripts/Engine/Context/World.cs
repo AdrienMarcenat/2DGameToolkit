@@ -2,11 +2,15 @@
 
 public class World : MonoBehaviour
 {
+    [SerializeField] private AudioSource m_EfxSource;
+    [SerializeField] private AudioSource m_MusicSource;
+
     private UnityLogger m_Logger;
     private Updater m_Updater;
     private GameEventManager m_GameEventManager;
     private InputManager m_InputManager;
     private LevelManager m_LevelManager;
+    private SoundManager m_SoundManager;
 
     private GameFlowHSM m_GameFlowHSM;
 
@@ -27,7 +31,8 @@ public class World : MonoBehaviour
             m_InputManager = new InputManager();
             m_LevelManager = new LevelManager();
             m_GameFlowHSM = new GameFlowHSM();
-            OpenProxies();
+            m_SoundManager = new SoundManager (m_EfxSource, m_MusicSource);
+            OpenProxies ();
             OnEngineStart();
         }
         else if (ms_Instance != this)
@@ -41,7 +46,6 @@ public class World : MonoBehaviour
     {
         if (ms_Instance == this)
         {
-            this.DebugLog("Shutdown");
             OnEngineStop();
             CloseProxies();
         }
@@ -54,15 +58,17 @@ public class World : MonoBehaviour
         GameEventManagerProxy.Open(m_GameEventManager);
         InputManagerProxy.Open(m_InputManager);
         LevelManagerProxy.Open(m_LevelManager);
+        SoundManagerProxy.Open (m_SoundManager);
     }
 
     void CloseProxies()
     {
-        LoggerProxy.Close(m_Logger);
-        UpdaterProxy.Close(m_Updater);
-        GameEventManagerProxy.Close(m_GameEventManager);
+        SoundManagerProxy.Close (m_SoundManager);
+        LevelManagerProxy.Close (m_LevelManager);
         InputManagerProxy.Close(m_InputManager);
-        LevelManagerProxy.Close(m_LevelManager);
+        GameEventManagerProxy.Close (m_GameEventManager);
+        UpdaterProxy.Close (m_Updater);
+        LoggerProxy.Close (m_Logger);
     }
 
     void OnEngineStart()

@@ -736,6 +736,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1678356469075680, guid: 974e13595956d1a4db7b2266ed5eaf76, type: 3}
+      propertyPath: m_Name
+      value: World
+      objectReference: {fileID: 0}
     - target: {fileID: 4639251814797700, guid: 974e13595956d1a4db7b2266ed5eaf76, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -767,6 +771,18 @@ PrefabInstance:
     - target: {fileID: 4639251814797700, guid: 974e13595956d1a4db7b2266ed5eaf76, type: 3}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4639251814797700, guid: 974e13595956d1a4db7b2266ed5eaf76, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4639251814797700, guid: 974e13595956d1a4db7b2266ed5eaf76, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4639251814797700, guid: 974e13595956d1a4db7b2266ed5eaf76, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 974e13595956d1a4db7b2266ed5eaf76, type: 3}
@@ -1201,6 +1217,7 @@ MonoBehaviour:
   m_DialogeText: {fileID: 0}
   m_NameText: {fileID: 0}
   m_Animator: {fileID: 0}
+  m_OptionButtons: []
 --- !u!4 &1213997465
 Transform:
   m_ObjectHideFlags: 0
