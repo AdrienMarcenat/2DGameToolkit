@@ -2,9 +2,6 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Serialization;
-using System.IO;
-using System.Xml;
 using UnityEngine.Assertions;
 
 namespace Dialogue
@@ -22,7 +19,7 @@ namespace Dialogue
 
         void Start()
         {
-            TriggerDialogue("bob.xml");
+            TriggerDialogue("bob");
         }
 
         private void StartDialogue ()
@@ -80,7 +77,7 @@ namespace Dialogue
 
         public void TriggerDialogue(string tag)
         {
-            string filename = Application.streamingAssetsPath + ms_DialogueDirectory + tag;
+            string filename = Application.streamingAssetsPath + ms_DialogueDirectory + tag + ".xml";
             Dialogue dialogue = XMLSerializerHelper.Deserialize<Dialogue>(filename);
             m_Dialogue = dialogue;
             StartDialogue();
