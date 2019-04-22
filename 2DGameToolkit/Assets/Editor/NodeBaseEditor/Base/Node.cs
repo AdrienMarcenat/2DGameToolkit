@@ -11,15 +11,15 @@ public class Node
     public ConnectionPoint m_InPoint;
     public ConnectionPoint m_OutPoint;
 
-    [XmlIgnore] private readonly string m_Title;
-    [XmlIgnore] private bool m_IsDragged;
-    [XmlIgnore] private bool m_IsSelected;
+    private readonly string m_Title;
+    private bool m_IsDragged;
+    private bool m_IsSelected;
 
-    [XmlIgnore] private GUIStyle m_Style;
-    [XmlIgnore] private readonly GUIStyle m_DefaultNodeStyle;
-    [XmlIgnore] private readonly GUIStyle m_SelectedNodeStyle;
+    private GUIStyle m_Style;
+    private readonly GUIStyle m_DefaultNodeStyle;
+    private readonly GUIStyle m_SelectedNodeStyle;
 
-    [XmlIgnore] private readonly Action<Node> m_OnRemoveNode;
+    private readonly Action<Node> m_OnRemoveNode;
 
     // parameterless constructor for xml serialization
     public Node()
@@ -32,7 +32,8 @@ public class Node
         , string inPointID, string outPointID, bool isMultipleConnectionAllowed, string id = null)
     {
         m_Rect = new Rect(position.x, position.y, GetWidth(), GetHeight());
-        m_Style = nodeStyle;
+        
+         m_Style = nodeStyle;
         float connectionPointOffset = m_Rect.height * 0.5f;
         m_InPoint = new ConnectionPoint(this, EConnectionPointType.In, inPointStyle
             , OnClickInPoint, connectionPointOffset, isMultipleConnectionAllowed, inPointID);

@@ -6,14 +6,17 @@ using UnityEngine.Assertions;
 
 public class DialogueNode : Node
 {
-    private const float m_Margin = 10f;
+    private const float m_Margin = 20f;
     private const float m_NameFieldHeight = 20f;
     private const float m_OptionFieldHeight = 20f;
     private const float m_TextFieldHeight = 100f;
     private const float m_Spacing = 10f;
+
     private readonly float m_TextFieldWidth;
     private readonly Action<ConnectionPoint> m_OnClickOutPoint;
     private readonly GUIStyle m_OutPointStyle;
+
+    private Rect m_RectWithMargin;
     private Dictionary<string, Dialogue.Option> m_ConnectionPointToOption = new Dictionary<string, Dialogue.Option>();
     private List<ConnectionPoint> m_OptionConnectionPoints = new List<ConnectionPoint>();
 
@@ -30,6 +33,7 @@ public class DialogueNode : Node
     : base(position, nodeStyle, selectedStyle, inPointStyle, outPointStyle
         , OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, inPointID, outPointID, false, id)
     {
+        m_RectWithMargin = new Rect (m_Margin, m_Margin, GetWidth () - 2 * m_Margin, GetHeight () - 2 * m_Margin);
         m_TextFieldWidth = m_Rect.width - 2 * m_Margin;
         m_OnClickOutPoint = OnClickOutPoint;
         m_OutPointStyle = outPointStyle;
@@ -47,6 +51,7 @@ public class DialogueNode : Node
     {
         base.Draw();
 
+        GUILayout.BeginArea (m_RectWithMargin);
         m_Node.m_Name = GUILayout.TextField(m_Node.m_Name);
         m_Node.m_Text = GUILayout.TextArea(m_Node.m_Text, GUILayout.ExpandHeight(true));
         if(GUILayout.Button("Add option"))
@@ -58,10 +63,17 @@ public class DialogueNode : Node
         {
             option.m_Text = GUILayout.TextArea(option.m_Text);
         }
+        GUILayout.EndArea ();
         foreach (ConnectionPoint optionConnectionPoint in m_OptionConnectionPoints)
         {
             optionConnectionPoint.Draw();
         }
+    }
+
+    private void ChangeHeight(float value)
+    {
+        m_Rect.height += value;
+        m_RectWithMargin.height += value;
     }
 
     private void AddOption()
@@ -73,9 +85,12 @@ public class DialogueNode : Node
         m_Node.AddOption(option);
         m_ConnectionPointToOption.Add(outPoint.m_Id, option);
         m_OptionConnectionPoints.Add(outPoint);
+        ChangeHeight(m_OptionFieldHeight);
     }
+
     private void RemoveOption(Dialogue.Option option)
     {
+        ChangeHeight (-m_OptionFieldHeight);
         m_Node.RemoveOption(option);
         //m_OptionConnectionPoints.Remove();
         //m_ConnectionPointToOption.Remove(outPoint.m_Id, option);
