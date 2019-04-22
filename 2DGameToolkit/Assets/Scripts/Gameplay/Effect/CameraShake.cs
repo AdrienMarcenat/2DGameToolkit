@@ -11,12 +11,23 @@ public class CameraShake : MonoBehaviour
 
     private void OnEnable ()
     {
-        this.RegisterAsListener ("Player", typeof (DamageGameEvent));
+        this.RegisterAsListener ("Player", typeof (DamageGameEvent), typeof (GameOverGameEvent));
+        this.RegisterAsListener ("Game", typeof (PauseEvent));
     }
 
     private void OnDisable ()
     {
+        this.UnregisterAsListener ("Game");
         this.UnregisterAsListener ("Player");
+    }
+    public void OnGameEvent (PauseEvent pauseEvent)
+    {
+        StopAllCoroutines ();
+    }
+
+    public void OnGameEvent (GameOverGameEvent gameOverGameEvent)
+    {
+        StopAllCoroutines ();
     }
 
     public void OnGameEvent (DamageGameEvent damageEvent)
