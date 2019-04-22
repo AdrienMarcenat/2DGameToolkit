@@ -314,6 +314,8 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
     private void OnClickRemoveConnection(Connection connection)
     {
         m_Graph.m_Connections.Remove((ConnectionType)connection);
+        connection.m_InPoint.OnConnectionRemove (connection);
+        connection.m_OutPoint.OnConnectionRemove (connection);
         string inID = connection.m_InPoint.GetNode().m_ID;
         string outID = connection.m_OutPoint.GetNode().m_ID;
         foreach (Node node in m_Graph.m_Nodes)
@@ -329,6 +331,8 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
     {
         Connection connection = new Connection(m_SelectedInPoint, m_SelectedOutPoint, OnClickRemoveConnection);
         m_Graph.m_Connections.Add(GetAsFinalType().CreateConnection(connection));
+        connection.m_InPoint.OnConnectionMade (connection);
+        connection.m_OutPoint.OnConnectionMade (connection);
         string inID = connection.m_InPoint.GetNode().m_ID;
         string outID = connection.m_OutPoint.GetNode().m_ID;
         foreach (Node node in m_Graph.m_Nodes)

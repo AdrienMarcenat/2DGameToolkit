@@ -7,10 +7,7 @@ using UnityEngine.Assertions;
 public class DialogueNode : Node
 {
     private const float m_Margin = 20f;
-    private const float m_NameFieldHeight = 20f;
     private const float m_OptionFieldHeight = 20f;
-    private const float m_TextFieldHeight = 100f;
-    private const float m_Spacing = 10f;
 
     private readonly float m_TextFieldWidth;
     private readonly Action<ConnectionPoint> m_OnClickOutPoint;
@@ -18,6 +15,7 @@ public class DialogueNode : Node
 
     private Rect m_RectWithMargin;
     private Dictionary<string, Dialogue.Option> m_ConnectionPointToOption = new Dictionary<string, Dialogue.Option>();
+    private Dictionary<Dialogue.Option, ConnectionPoint> m_OptionToConnectionPoint = new Dictionary<Dialogue.Option, ConnectionPoint> ();
     private List<ConnectionPoint> m_OptionConnectionPoints = new List<ConnectionPoint>();
 
     public Dialogue.Node m_Node = new Dialogue.Node("Name", "Text");
@@ -59,41 +57,70 @@ public class DialogueNode : Node
             AddOption();
         }
 
+        List<Dialogue.Option> optionToRemove = new List<Dialogue.Option> ();
         foreach(Dialogue.Option option in m_Node.m_Options)
         {
-            option.m_Text = GUILayout.TextArea(option.m_Text);
+            GUILayout.BeginHorizontal ();
+            option.m_Text = GUILayout.TextArea(option.m_Text, GUILayout.ExpandWidth (true));
+            if(GUILayout.Button("X", GUILayout.ExpandWidth (false)))
+            {
+                optionToRemove.Add (option);
+            }
+            GUILayout.EndHorizontal ();
         }
         GUILayout.EndArea ();
         foreach (ConnectionPoint optionConnectionPoint in m_OptionConnectionPoints)
         {
             optionConnectionPoint.Draw();
         }
+        foreach (Dialogue.Option option in optionToRemove)
+        {
+            RemoveOption (option);
+        }
     }
 
-    private void ChangeHeight(float value)
+    private void IncreaseHeight(float value)
     {
         m_Rect.height += value;
         m_RectWithMargin.height += value;
+    }
+
+    private void DecreaseHeight (float value)
+    {
+        m_Rect.height -= value;
+        m_RectWithMargin.height -= value;
+        if (m_OptionConnectionPoints.Count > 0)
+        {
+            float offset = GetHeight();
+            for (int i = 0; i < m_OptionConnectionPoints.Count; i++)
+            {
+                m_OptionConnectionPoints[i].SetOffset (offset);
+                offset += m_OptionFieldHeight;
+            }
+        }
     }
 
     private void AddOption()
     {
         ConnectionPoint outPoint = new ConnectionPoint(this, EConnectionPointType.Out
             , m_OutPointStyle, m_OnClickOutPoint, m_Rect.height, false);
-        // The option is created without connection, so it points to the exit node id, -1
+        // The option is created without connection, so it points to the exit node id
         Dialogue.Option option = new Dialogue.Option("Option", "");
         m_Node.AddOption(option);
         m_ConnectionPointToOption.Add(outPoint.m_Id, option);
+        m_OptionToConnectionPoint.Add (option, outPoint);
         m_OptionConnectionPoints.Add(outPoint);
-        ChangeHeight(m_OptionFieldHeight);
+        IncreaseHeight (m_OptionFieldHeight);
     }
 
     private void RemoveOption(Dialogue.Option option)
     {
-        ChangeHeight (-m_OptionFieldHeight);
         m_Node.RemoveOption(option);
-        //m_OptionConnectionPoints.Remove();
-        //m_ConnectionPointToOption.Remove(outPoint.m_Id, option);
+        ConnectionPoint outPoint = GetConnectionPointFromOption (option);
+        m_OptionConnectionPoints.Remove(outPoint);
+        m_OptionToConnectionPoint.Remove (option);
+        m_ConnectionPointToOption.Remove (outPoint.m_Id);
+        DecreaseHeight (m_OptionFieldHeight);
     }
 
     private Dialogue.Option GetOptionFromConnection(Connection connection)
@@ -104,6 +131,15 @@ public class DialogueNode : Node
         Assert.IsTrue(optionExist, "Cannot find option from connection");
         return option;
     }
+
+    private ConnectionPoint GetConnectionPointFromOption (Dialogue.Option option)
+    {
+        ConnectionPoint outPoint;
+        bool outPointExist = m_OptionToConnectionPoint.TryGetValue (option, out outPoint);
+        Assert.IsTrue (outPointExist, "Cannot find connection from option");
+        return outPoint;
+    }
+
     public override void OnConnectionMade(Connection connection)
     {
         if (connection.m_InPoint == m_InPoint)

@@ -12,14 +12,14 @@ public class ConnectionPoint
 {
     public string m_Id;
 
-    [XmlIgnore] private Rect m_Rect;
-    [XmlIgnore] private readonly EConnectionPointType m_Type;
-    [XmlIgnore] private readonly Node m_Node;
-    [XmlIgnore] private readonly GUIStyle m_Style;
-    [XmlIgnore] private readonly Action<ConnectionPoint> m_OnClickConnectionPoint;
-    [XmlIgnore] private readonly float m_Offset;
-    [XmlIgnore] private readonly bool m_IsMultipleConnectionAllowed;
-    [XmlIgnore] private int m_ConnectionOutCount = 0;
+    private Rect m_Rect;
+    private readonly EConnectionPointType m_Type;
+    private readonly Node m_Node;
+    private readonly GUIStyle m_Style;
+    private readonly Action<ConnectionPoint> m_OnClickConnectionPoint;
+    private readonly bool m_IsMultipleConnectionAllowed;
+    private int m_ConnectionOutCount = 0;
+    private float m_Offset;
 
     // parameterless constructor for xml serialization
     public ConnectionPoint() { }
@@ -86,5 +86,15 @@ public class ConnectionPoint
     public virtual void OnConnectionRemove(Connection connection)
     {
         m_ConnectionOutCount--;
+    }
+
+    public void SetOffset(float offset)
+    {
+        m_Offset = offset;
+    }
+
+    public float GetOffset ()
+    {
+        return m_Offset;
     }
 }
