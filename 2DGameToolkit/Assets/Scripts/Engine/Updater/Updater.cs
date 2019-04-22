@@ -19,6 +19,7 @@ public class Updater : IUpdater
     List<ObjectToUpdate>[] m_ObjectListPerPass = new List<ObjectToUpdate>[(int)EUpdatePass.Count];
     private bool m_UpdateGuard = false;
     private bool m_IsPaused = false;
+    private int m_PauseLock = 0;
 
     struct ObjectToUpdate
     {
@@ -88,7 +89,8 @@ public class Updater : IUpdater
 
     public void SetPause (bool pause)
     {
-        m_IsPaused = pause;
+        m_PauseLock += pause ? 1 : -1;
+        m_IsPaused = m_PauseLock > 0;
     }
 
     public bool IsPaused ()
