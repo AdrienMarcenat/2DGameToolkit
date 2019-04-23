@@ -117,7 +117,7 @@ public class Node
         genericMenu.ShowAsContext();
     }
 
-    private void OnClickRemoveNode()
+    protected virtual void OnClickRemoveNode()
     {
         if (m_OnRemoveNode != null)
         {

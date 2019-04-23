@@ -305,7 +305,7 @@ public class NodeBasedEditor<Editor, NodeType, ConnectionType> : EditorWindow
 
         foreach (ConnectionType connection in connectionsToRemove)
         {
-            m_Graph.m_Connections.Remove(connection);
+            OnClickRemoveConnection (connection);
         }
 
         m_Graph.m_Nodes.Remove((NodeType)node);

@@ -117,6 +117,7 @@ public class DialogueNode : Node
     {
         m_Node.RemoveOption(option);
         ConnectionPoint outPoint = GetConnectionPointFromOption (option);
+        outPoint.OnBeingRemoved ();
         m_OptionConnectionPoints.Remove(outPoint);
         m_OptionToConnectionPoint.Remove (option);
         m_ConnectionPointToOption.Remove (outPoint.m_Id);
@@ -172,5 +173,13 @@ public class DialogueNode : Node
             // Now this option points to the exit node
             option.m_DestinationNodeID = "";
         }
+    }
+    protected override void OnClickRemoveNode ()
+    {
+        foreach (ConnectionPoint optionConnectionPoint in m_OptionConnectionPoints)
+        {
+            optionConnectionPoint.OnBeingRemoved ();
+        }
+        base.OnClickRemoveNode ();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -18,8 +19,9 @@ public class ConnectionPoint
     private readonly GUIStyle m_Style;
     private readonly Action<ConnectionPoint> m_OnClickConnectionPoint;
     private readonly bool m_IsMultipleConnectionAllowed;
-    private int m_ConnectionOutCount = 0;
     private float m_Offset;
+    private List<Connection> m_Connections = new List<Connection> ();
+    private bool m_IsBeingRemoved = false;
 
     // parameterless constructor for xml serialization
     public ConnectionPoint() { }
@@ -69,7 +71,7 @@ public class ConnectionPoint
                 break;
         }
 
-        if (GUI.Button(m_Rect, "", m_Style) && (m_IsMultipleConnectionAllowed || m_ConnectionOutCount == 0))
+        if (GUI.Button(m_Rect, "", m_Style) && (m_IsMultipleConnectionAllowed || m_Connections.Count == 0))
         {
             if (m_OnClickConnectionPoint != null)
             {
@@ -80,12 +82,15 @@ public class ConnectionPoint
 
     public virtual void OnConnectionMade(Connection connection)
     {
-        m_ConnectionOutCount++;
+        m_Connections.Add (connection);
     }
 
     public virtual void OnConnectionRemove(Connection connection)
     {
-        m_ConnectionOutCount--;
+        if (!m_IsBeingRemoved)
+        {
+            m_Connections.Remove (connection);
+        }
     }
 
     public void SetOffset(float offset)
@@ -96,5 +101,14 @@ public class ConnectionPoint
     public float GetOffset ()
     {
         return m_Offset;
+    }
+
+    public void OnBeingRemoved()
+    {
+        m_IsBeingRemoved = true;
+        foreach (Connection connection in m_Connections)
+        {
+            connection.OnConnectionPointRemoved ();
+        }
     }
 }

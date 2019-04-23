@@ -39,4 +39,12 @@ public class Connection
             }
         }
     }
+
+    public void OnConnectionPointRemoved()
+    {
+        if (m_OnClickRemoveConnection != null)
+        {
+            m_OnClickRemoveConnection (this);
+        }
+    }
 }
