@@ -181,4 +181,9 @@ public class DialogueNode : Node
         }
         base.OnClickRemoveNode ();
     }
+
+    public bool IsRoot()
+    {
+        return !m_InPoint.HasConnection ();
+    }
 }

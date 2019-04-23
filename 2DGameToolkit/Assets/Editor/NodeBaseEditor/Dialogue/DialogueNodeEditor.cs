@@ -2,6 +2,7 @@
 using UnityEditor;
 using System;
 using System.IO;
+using UnityEngine.Assertions;
 
 public class DialogueNodeEditor : NodeBasedEditor<DialogueNodeEditor, DialogueNode, Connection>
     , INodeEditor<DialogueNode, Connection>
@@ -58,10 +59,17 @@ public class DialogueNodeEditor : NodeBasedEditor<DialogueNodeEditor, DialogueNo
         // When the game will want to read the dialogue it does not care about visual stuff
         // so we serialize the gameplay info in another file in StreamingAssets
         Dialogue.Dialogue dialogue = new Dialogue.Dialogue();
+        string rootNodeID = "";
         foreach (DialogueNode node in m_Graph.m_Nodes)
         {
             dialogue.AddNode(node.m_Node);
+            if(node.IsRoot())
+            {
+                Assert.IsTrue (rootNodeID == "", "several root node found, this dialogue is ill formed");
+                rootNodeID = node.m_ID;
+            }
         }
+        dialogue.m_RootNodeID = rootNodeID;
         string filename = Path.GetFileName(savePath);
         XMLSerializerHelper.Serialize(dialogue, Application.streamingAssetsPath + "/Dialogues/" + filename);
     }

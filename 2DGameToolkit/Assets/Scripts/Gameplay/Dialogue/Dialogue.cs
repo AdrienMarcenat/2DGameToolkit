@@ -6,6 +6,7 @@ namespace Dialogue
     public class Dialogue
     {
         public List<Node> m_Nodes = new List<Node>();
+        public string m_RootNodeID;
 
         public Dialogue()
         { }
@@ -31,7 +32,7 @@ namespace Dialogue
 
         public string GetRootNodeID()
         {
-            return null;
+            return m_RootNodeID;
         }
     }
 }

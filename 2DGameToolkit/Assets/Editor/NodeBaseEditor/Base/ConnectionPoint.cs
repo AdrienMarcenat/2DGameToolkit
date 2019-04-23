@@ -71,13 +71,18 @@ public class ConnectionPoint
                 break;
         }
 
-        if (GUI.Button(m_Rect, "", m_Style) && (m_IsMultipleConnectionAllowed || m_Connections.Count == 0))
+        if (GUI.Button(m_Rect, "", m_Style) && (m_IsMultipleConnectionAllowed || !HasConnection ()))
         {
             if (m_OnClickConnectionPoint != null)
             {
                 m_OnClickConnectionPoint(this);
             }
         }
+    }
+
+    public bool HasConnection()
+    {
+        return m_Connections.Count != 0;
     }
 
     public virtual void OnConnectionMade(Connection connection)
