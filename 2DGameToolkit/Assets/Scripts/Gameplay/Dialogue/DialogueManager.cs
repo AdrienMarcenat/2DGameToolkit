@@ -14,6 +14,8 @@ namespace Dialogue
         [SerializeField] private List<DialogueOptionButton> m_OptionButtons = new List<DialogueOptionButton>();
 
         private bool m_IsInDialogue = false;
+        private bool m_IsWaitingForInput = false;
+        private Node m_CurrentNode;
         private static string ms_DialogueDirectory = "/Dialogues/";
 
         private Dialogue m_Dialogue;
@@ -21,10 +23,12 @@ namespace Dialogue
         void Awake()
         {
             DialogueManagerProxy.Open (this);
+            this.RegisterAsListener ("Player", typeof (PlayerInputGameEvent));
         }
 
         void OnDestroy()
         {
+            this.UnregisterAsListener ("Player");
             DialogueManagerProxy.Close (this);
         }
 
@@ -46,14 +50,14 @@ namespace Dialogue
                 return;
             }
             StopAllCoroutines ();
-            Node node = m_Dialogue.GetNode(nodeID);
-            m_NameText.text = node.m_Name;
+            m_CurrentNode = m_Dialogue.GetNode(nodeID);
+            m_NameText.text = m_CurrentNode.m_Name;
             m_DialogeText.text = "";
             foreach(DialogueOptionButton optionButton in m_OptionButtons)
             {
                 optionButton.Reset();
             }
-            StartCoroutine (DisplayNodeRoutine(node));
+            StartCoroutine (DisplayNodeRoutine(m_CurrentNode));
         }
 
         IEnumerator DisplayNodeRoutine(Node node)
@@ -64,7 +68,23 @@ namespace Dialogue
                 m_DialogeText.text += letter;
                 yield return null;
             }
-            DisplayOptions(node.m_Options);
+            if(node.m_Options.Count == 0)
+            {
+                StartCoroutine (WaitForInput ());
+            }
+            else
+            {
+                DisplayOptions (node.m_Options);
+            }
+        }
+        IEnumerator WaitForInput ()
+        {
+            m_IsWaitingForInput = true;
+            while (m_IsWaitingForInput)
+            {
+                yield return null;
+            }
+            DisplayNode (m_CurrentNode.m_NextNodeID);
         }
 
         private void DisplayOptions(List<Option> options)
@@ -92,6 +112,19 @@ namespace Dialogue
             Dialogue dialogue = XMLSerializerHelper.Deserialize<Dialogue>(filename);
             m_Dialogue = dialogue;
             StartDialogue();
+        }
+
+        public void OnGameEvent (PlayerInputGameEvent inputEvent)
+        {
+            if (m_IsInDialogue && m_IsWaitingForInput)
+            {
+                string input = inputEvent.GetInput ();
+                EInputState state = inputEvent.GetInputState ();
+                if (input ==  "Enter" && state == EInputState.Down)
+                {
+                    m_IsWaitingForInput = false;
+                }
+            }
         }
     }
 }

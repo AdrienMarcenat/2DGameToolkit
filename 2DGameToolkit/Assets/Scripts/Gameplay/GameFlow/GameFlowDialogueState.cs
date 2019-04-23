@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class GameFlowDialogueState : HSMState
+﻿public class GameFlowDialogueState : HSMState
 {
     public override void OnEnter ()
     {

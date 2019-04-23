@@ -3,3 +3,4 @@ Jump:Space
 Right:RightArrow
 Left:LeftArrow
 Fire:X
+Enter:Return
