@@ -21,7 +21,6 @@ namespace Dialogue
         void Awake()
         {
             DialogueManagerProxy.Open (this);
-            TriggerDialogue("bob");
         }
 
         void OnDestroy()

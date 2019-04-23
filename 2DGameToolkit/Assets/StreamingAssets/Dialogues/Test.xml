@@ -2,9 +2,10 @@
 <Dialogue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <m_Nodes>
     <Node>
-      <m_NodeID>-1</m_NodeID>
+      <m_ID>eb7afbcd-e3c6-4981-a13c-69a276256899</m_ID>
       <m_Name>Bob</m_Name>
-      <m_Text>heihe</m_Text>
+      <m_Text>This is a test.</m_Text>
+      <m_NextNodeID />
       <m_Options />
     </Node>
   </m_Nodes>

@@ -9,7 +9,6 @@ public class DialogueNode : Node
     private const float m_Margin = 20f;
     private const float m_OptionFieldHeight = 20f;
 
-    private readonly float m_TextFieldWidth;
     private readonly Action<ConnectionPoint> m_OnClickOutPoint;
     private readonly GUIStyle m_OutPointStyle;
 
@@ -18,7 +17,7 @@ public class DialogueNode : Node
     private Dictionary<Dialogue.Option, ConnectionPoint> m_OptionToConnectionPoint = new Dictionary<Dialogue.Option, ConnectionPoint> ();
     private List<ConnectionPoint> m_OptionConnectionPoints = new List<ConnectionPoint>();
 
-    public Dialogue.Node m_Node = new Dialogue.Node("Name", "Text");
+    public Dialogue.Node m_Node;
     public List<ConnectionPoint> m_OptionOutPoints = new List<ConnectionPoint>();
 
     public DialogueNode()
@@ -32,9 +31,9 @@ public class DialogueNode : Node
         , OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, inPointID, outPointID, false, id)
     {
         m_RectWithMargin = new Rect (m_Margin, m_Margin, GetWidth () - 2 * m_Margin, GetHeight () - 2 * m_Margin);
-        m_TextFieldWidth = m_Rect.width - 2 * m_Margin;
         m_OnClickOutPoint = OnClickOutPoint;
         m_OutPointStyle = outPointStyle;
+        m_Node = new Dialogue.Node ("Name", "Text", m_ID);
     }
     protected override float GetWidth()
     {

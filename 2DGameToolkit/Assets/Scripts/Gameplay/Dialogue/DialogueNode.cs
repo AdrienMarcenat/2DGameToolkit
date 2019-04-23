@@ -16,10 +16,11 @@ namespace Dialogue
         public Node()
         { }
 
-        public Node(string name, string text)
+        public Node(string name, string text, string id)
         {
             m_Name = name;
             m_Text = text;
+            m_ID = id;
         }
 
         public void AddOption(Option option)
