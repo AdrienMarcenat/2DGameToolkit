@@ -48,11 +48,11 @@ public class Camera2D : MonoBehaviour
         {
             foreach (Transform lane in m_Lanes)
             {
-                yNew = lane.position.y;
                 if (m_TrackingTarget.position.y < lane.position.y)
                 {
                     break;
                 }
+                yNew = lane.position.y;
             }
         }
 

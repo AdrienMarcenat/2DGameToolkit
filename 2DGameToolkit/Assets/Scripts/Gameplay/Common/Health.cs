@@ -2,7 +2,7 @@
 
 public class DamageGameEvent : GameEvent
 {
-    public DamageGameEvent(string tag, float damage) : base(tag)
+    public DamageGameEvent(string tag, float damage) : base(tag, EProtocol.Instant)
     {
         m_Damage = damage;
     }
@@ -17,78 +17,126 @@ public class DamageGameEvent : GameEvent
 
 public class GameOverGameEvent : GameEvent
 {
-    public GameOverGameEvent (string tag) : base (tag)
+    public GameOverGameEvent(string tag) : base(tag)
     {
     }
 }
 
 public class Health : MonoBehaviour
 {
-	[SerializeField] protected float m_MaxHealth;
-	protected float m_CurrentHealth;
-    private float m_DamageModifier;
-    private bool m_Enable;
+    [SerializeField] protected int m_MaxHealth;
+    protected int m_CurrentHealth;
+    private int m_DamageModifier;
+    private bool m_Enable = true;
+    protected string m_EventTag;
 
-	protected void Start ()
-	{
-		m_CurrentHealth = m_MaxHealth;
-        m_DamageModifier = 1.0f;
-        m_Enable = true;
-	}
+    protected virtual string GetEventTag() { return gameObject.GetInstanceID().ToString(); }
 
-    public void Heal (float value)
+    protected void Start()
+    {
+        m_EventTag = GetEventTag();
+
+        m_CurrentHealth = m_MaxHealth;
+        m_DamageModifier = 1;
+    }
+
+    public void Heal(int value)
     {
         if (!m_Enable)
         {
             return;
         }
-        m_CurrentHealth = Mathf.Clamp(m_CurrentHealth + value, 0, m_MaxHealth);
+        int newHealth = System.Math.Min(m_MaxHealth, m_CurrentHealth + value);
+        int heal = newHealth - m_CurrentHealth;
+        m_CurrentHealth = newHealth;
+        PushDamageEvent(-heal);
     }
 
-    public void LoseHealth (float damage)
-	{
+    public void FullHeal()
+    {
+        if (!m_Enable)
+        {
+            return;
+        }
+        int heal = m_MaxHealth - m_CurrentHealth;
+        m_CurrentHealth = m_MaxHealth;
+        PushDamageEvent(-heal);
+    }
+
+    public void LoseHealth(int damage)
+    {
         if (!m_Enable)
         {
             return;
         }
 
-		m_CurrentHealth = Mathf.Max (0, m_CurrentHealth - m_DamageModifier * damage);
-        new DamageGameEvent (gameObject.name, damage).Push();
+        m_CurrentHealth = System.Math.Max(0, m_CurrentHealth - m_DamageModifier * damage);
+        PushDamageEvent(damage);
 
-		CheckIfGameOver ();
-	}
+        CheckIfGameOver();
+    }
 
-	public float GetCurrentHealth ()
-	{
-		return m_CurrentHealth;
-	}
+    public void LoseMaxHealth(int newMaxHealth)
+    {
+        if (!m_Enable)
+        {
+            return;
+        }
 
-    public void SetMaxHealth (float value)
+        int damage = m_MaxHealth - newMaxHealth;
+        m_MaxHealth = System.Math.Max(0, newMaxHealth);
+        m_CurrentHealth = System.Math.Min(0, m_CurrentHealth - m_DamageModifier * damage);
+        PushDamageEvent(damage);
+
+        CheckIfGameOver();
+    }
+
+    public int GetCurrentHealth()
+    {
+        return m_CurrentHealth;
+    }
+
+    public int GetMaxHealth()
+    {
+        return m_MaxHealth;
+    }
+
+    public void SetMaxHealth(int value)
     {
         m_MaxHealth = value;
+        FullHeal();
+        CheckIfGameOver();
     }
 
-    public float GetTotalHealth ()
-	{
-		return m_MaxHealth;
-	}
+    public float GetTotalHealth()
+    {
+        return m_MaxHealth;
+    }
 
-	private void CheckIfGameOver ()
-	{
-		if (m_CurrentHealth <= 0)
-		{
-			new GameOverGameEvent (gameObject.name).Push ();
-		}
-	}
+    private void CheckIfGameOver()
+    {
+        if (m_CurrentHealth <= 0)
+        {
+            new GameOverGameEvent(m_EventTag).Push();
+        }
+    }
 
-	public void Enable (bool enable)
-	{
-		m_Enable = enable;
-	}
+    public void Enable(bool enable)
+    {
+        m_Enable = enable;
+    }
 
-	public void SetDamageModifier (float modifier)
-	{
-		m_DamageModifier = modifier;
-	}
+    public void SetDamageModifier(int modifier)
+    {
+        m_DamageModifier = modifier;
+    }
+
+    private void PushDamageEvent(int damage)
+    {
+        if (m_EventTag != null)
+        {
+            new DamageGameEvent(m_EventTag, damage).Push();
+        }
+    }
 }
 

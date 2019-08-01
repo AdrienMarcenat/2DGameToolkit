@@ -2,7 +2,7 @@
 
 public class Bullet : MonoBehaviour
 {
-	[SerializeField] private float m_Damage;
+	[SerializeField] private int m_Damage;
 	[SerializeField] private float m_Range;
 	[SerializeField] private float m_Penetration;
 	[SerializeField] private string m_TargetTag;

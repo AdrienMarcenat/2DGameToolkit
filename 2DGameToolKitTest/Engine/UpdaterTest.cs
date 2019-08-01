@@ -11,71 +11,71 @@ namespace _2DGameToolKitTest
 
         class DummyAILogic
         {
-            public DummyAILogic ()
+            public DummyAILogic()
             {
                 m_UpdateCount = 0;
             }
 
-            public void UpdateAI ()
+            public void UpdateAI()
             {
                 m_UpdateCount++;
             }
 
-            public void UpdateLast ()
+            public void UpdateLast()
             {
                 // This should not be allowed in an update callback
-                this.RegisterToUpdate (EUpdatePass.First);
+                this.UnregisterToUpdate(EUpdatePass.Last);
             }
 
             public int m_UpdateCount;
         }
 
         [TestInitialize]
-        public void TestInitialize ()
+        public void TestInitialize()
         {
-            UpdaterProxy.Open (m_Updater);
+            UpdaterProxy.Open(m_Updater);
         }
 
         [TestCleanup]
-        public void TestCleanup ()
+        public void TestCleanup()
         {
-            UpdaterProxy.Close (m_Updater);
+            UpdaterProxy.Close(m_Updater);
         }
 
         [TestMethod]
-        public void TestRegisterToUpdate ()
+        public void TestRegisterToUpdate()
         {
-            DummyAILogic objectToNotify = new DummyAILogic ();
-            objectToNotify.RegisterToUpdate (EUpdatePass.AI);
+            DummyAILogic objectToNotify = new DummyAILogic();
+            objectToNotify.RegisterToUpdate(EUpdatePass.AI);
 
-            m_Updater.Update ();
-            Assert.IsTrue (objectToNotify.m_UpdateCount == 1);
+            m_Updater.Update();
+            Assert.IsTrue(objectToNotify.m_UpdateCount == 1);
 
-            m_Updater.Update ();
-            Assert.IsTrue (objectToNotify.m_UpdateCount == 2);
+            m_Updater.Update();
+            Assert.IsTrue(objectToNotify.m_UpdateCount == 2);
         }
 
         [TestMethod]
-        public void TestUnregisterToUpdate ()
+        public void TestUnregisterToUpdate()
         {
-            DummyAILogic objectToNotify = new DummyAILogic ();
-            objectToNotify.RegisterToUpdate (EUpdatePass.AI);
+            DummyAILogic objectToNotify = new DummyAILogic();
+            objectToNotify.RegisterToUpdate(EUpdatePass.AI);
 
-            m_Updater.Update ();
-            Assert.IsTrue (objectToNotify.m_UpdateCount == 1);
+            m_Updater.Update();
+            Assert.IsTrue(objectToNotify.m_UpdateCount == 1);
 
-            objectToNotify.UnregisterToUpdate (EUpdatePass.AI);
-            m_Updater.Update ();
-            Assert.IsTrue (objectToNotify.m_UpdateCount == 1);
+            objectToNotify.UnregisterToUpdate(EUpdatePass.AI);
+            m_Updater.Update();
+            Assert.IsTrue(objectToNotify.m_UpdateCount == 1);
         }
 
         [TestMethod]
-        public void TestNoReentrancy ()
+        public void TestNoReentrancy()
         {
-            DummyAILogic objectToNotify = new DummyAILogic ();
-            objectToNotify.RegisterToUpdate (EUpdatePass.Last);
+            DummyAILogic objectToNotify = new DummyAILogic();
+            objectToNotify.RegisterToUpdate(EUpdatePass.Last);
 
-            Assert.ThrowsException<SecurityException> (delegate { m_Updater.Update (); });
+            Assert.ThrowsException<SecurityException>(delegate { m_Updater.Update(); });
         }
     }
 }

@@ -10,19 +10,58 @@ public class EnemyAI : MonoBehaviour
 
     protected WeaponManager m_WeaponManager;
     protected float m_FireDelay;
+    protected bool m_IsDying = false;
+    protected bool m_InitDone = false;
 
-    protected virtual void Fire ()
+    protected virtual void Fire()
     {
 
     }
 
-    void Start ()
+    void Start()
     {
-        m_WeaponManager = GetComponent<WeaponManager> ();
+        m_WeaponManager = GetComponent<WeaponManager>();
         m_FireDelay = m_FireRate;
+        this.RegisterToUpdate(EUpdatePass.AI);
+        this.RegisterAsListener(gameObject.GetInstanceID().ToString(), typeof(GameOverGameEvent));
+        m_InitDone = true;
     }
 
-    void Update ()
+    public void OnGameEvent(GameOverGameEvent gameOverEvent)
+    {
+        m_IsDying = true;
+        OnGameOver();
+    }
+
+    private void OnDisable()
+    {
+        // Call the cleanup code if it has not been done
+        if (!m_IsDying)
+        {
+            OnGameOver();
+        }
+        if (m_InitDone)
+        {
+            m_InitDone = false;
+            this.UnregisterAsListener(gameObject.GetInstanceID().ToString());
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Call the cleanup code if it has not been done
+        if (!m_IsDying)
+        {
+            OnGameOver();
+        }
+        if (m_InitDone)
+        {
+            m_InitDone = false;
+            this.UnregisterAsListener(gameObject.GetInstanceID().ToString());
+        }
+    }
+
+    public void UpdateAI()
     {
         if (m_FireDelay < m_FireRate)
         {
@@ -30,12 +69,12 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            Fire ();
+            Fire();
             m_FireDelay = 0;
         }
     }
 
-    public void SetFireParameters (float rate, float salveNumber, float sizeModifier, float precision)
+    public void SetFireParameters(float rate, float salveNumber, float sizeModifier, float precision)
     {
         m_FireRate = rate;
         m_FireSalveNumber = salveNumber;
@@ -43,9 +82,14 @@ public class EnemyAI : MonoBehaviour
         m_AimedPrecision = precision;
     }
 
-    public void SetShootDirection (Transform shootDirection)
+    public void SetShootDirection(Transform shootDirection)
     {
         m_ShootDirection = shootDirection;
+    }
+
+    protected void OnGameOver()
+    {
+        this.UnregisterToUpdate(EUpdatePass.AI);
     }
 }
 

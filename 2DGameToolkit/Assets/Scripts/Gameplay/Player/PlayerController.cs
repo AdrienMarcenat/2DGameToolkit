@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 [RequireComponent(typeof(MovingObject))]
 [RequireComponent (typeof (WeaponManager))]
@@ -7,12 +8,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float m_JumpForce = 5;
     [SerializeField] private bool m_AirControl = false;
     [SerializeField] private LayerMask m_WhatIsGround;
+    [SerializeField] private float m_KnockBackForce = 3;
+    [SerializeField] private float m_KnockBackYCorrectionForce = 1;
+    [SerializeField] private float m_KnockBackTime = 1;
+    [SerializeField] AudioClip m_HitSound;
 
     private MovingObject m_Mover;
     private WeaponManager m_WeaponManager;
     private Transform m_GroundCheck;
     private const float ms_GroundedRadius = 0.2f;
     private bool m_Grounded;
+    private bool m_ProcessInput = true;
     private Vector3 m_FacingDirection;
 
     private static Vector3 ms_Right = new Vector3 (1, 0, 0);
@@ -46,6 +52,10 @@ public class PlayerController : MonoBehaviour
 
     public void OnGameEvent(PlayerInputGameEvent inputEvent)
     {
+        if (UpdaterProxy.Get().IsPaused() || !m_ProcessInput)
+        {
+            return;
+        }
         string input = inputEvent.GetInput ();
         EInputState state = inputEvent.GetInputState ();
         switch (input)
@@ -96,5 +106,21 @@ public class PlayerController : MonoBehaviour
     private void Fire ()
     {
         m_WeaponManager.Fire (0, m_FacingDirection);
+    }
+
+    public void KnockBack(Transform hazardTransfrom)
+    {
+        SoundManagerProxy.Get().PlayMultiple(m_HitSound);
+        m_Mover.CancelVelocity();
+        m_Mover.ApplyForce(m_KnockBackForce * new Vector2(transform.position.x - hazardTransfrom.position.x
+            , m_KnockBackYCorrectionForce));
+        StartCoroutine(KnockBackRoutine());
+    }
+
+    private IEnumerator KnockBackRoutine()
+    {
+        m_ProcessInput = false;
+        yield return new WaitForSeconds(m_KnockBackTime);
+        m_ProcessInput = true;
     }
 }

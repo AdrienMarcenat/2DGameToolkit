@@ -6,12 +6,14 @@ using UnityEngine;
 public class SoundFilterOnEvent : MonoBehaviour
 {
     [SerializeField] private float m_TimeInSeconds = 0.5f;
+    [SerializeField] private float m_LowCutoffFrequency = 1000f;
+    [SerializeField] private float m_HighCutoffFrequency = 22000f;
     private AudioLowPassFilter m_AudioLowPassFilter;
 
     void Awake ()
     {
         m_AudioLowPassFilter = GetComponent<AudioLowPassFilter> ();
-        this.RegisterAsListener ("Player", typeof (DamageGameEvent));
+        this.RegisterAsListener("Player", typeof(DamageGameEvent), typeof(GameOverGameEvent));
     }
 
     void OnDestroy ()
@@ -21,14 +23,22 @@ public class SoundFilterOnEvent : MonoBehaviour
 
     public void OnGameEvent (DamageGameEvent damageGameEvent)
     {
-        StopAllCoroutines ();
-        StartCoroutine (LowPassRoutine());
+        if (damageGameEvent.GetDamage() > 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(LowPassRoutine());
+        }
+    }
+    public void OnGameEvent(GameOverGameEvent gameOverGameEvent)
+    {
+        StopAllCoroutines();
+        m_AudioLowPassFilter.cutoffFrequency = 22000;
     }
 
     private IEnumerator LowPassRoutine()
     {
-        m_AudioLowPassFilter.cutoffFrequency = 1000;
+        m_AudioLowPassFilter.cutoffFrequency = m_LowCutoffFrequency;
         yield return new WaitForSecondsRealtime(m_TimeInSeconds);
-        m_AudioLowPassFilter.cutoffFrequency = 5000;
+        m_AudioLowPassFilter.cutoffFrequency = m_HighCutoffFrequency;
     }
 }

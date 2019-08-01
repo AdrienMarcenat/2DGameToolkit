@@ -2,26 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof (MovingObject))]
+[RequireComponent(typeof(MovingObject))]
 public class MovingEnemy : Enemy
 {
     private MovingObject m_Body;
+    private Transform m_Target;
 
-    void Start ()
+    void Start()
     {
-        m_Body = GetComponent<MovingObject> ();
+        m_Body = GetComponent<MovingObject>();
     }
 
-    void Update ()
+    void Update()
     {
-        MoveEnemy ();
+        MoveEnemy();
     }
 
-    private void MoveEnemy ()
+    private void MoveEnemy()
     {
         float horizontal = m_Target.transform.position.x - transform.position.x;
         float vertical = m_Target.transform.position.y - transform.position.y;
 
-        m_Body.Move (horizontal, vertical);
+        m_Body.Move(horizontal, vertical);
     }
 }

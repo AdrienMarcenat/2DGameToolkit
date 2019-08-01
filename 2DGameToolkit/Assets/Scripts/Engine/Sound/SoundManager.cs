@@ -13,13 +13,19 @@ public class SoundManager : ISoundManager
 
     public void PlaySingle (AudioClip clip)
     {
-        m_EfxSource.clip = clip;
-        m_EfxSource.Play ();
+        if (clip != null)
+        {
+            m_EfxSource.clip = clip;
+            m_EfxSource.Play();
+        }
     }
 
     public void PlayMultiple (AudioClip clip)
     {
-       m_EfxSource.PlayOneShot (clip);
+        if (clip != null)
+        {
+            m_EfxSource.PlayOneShot(clip);
+        }
     }
 
     public void PlayMusic (AudioClip clip)

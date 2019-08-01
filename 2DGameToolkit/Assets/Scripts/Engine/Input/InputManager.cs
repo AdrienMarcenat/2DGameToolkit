@@ -17,7 +17,7 @@ public class InputManager : IInputManager
 
     public void OnEngineStart ()
     {
-        this.RegisterToUpdate (EUpdatePass.BeforeAI);
+        this.RegisterToUpdate (false, EUpdatePass.BeforeAI);
         FillKeyCodes (m_InputFileName);
     }
     public void OnEngineStop()
